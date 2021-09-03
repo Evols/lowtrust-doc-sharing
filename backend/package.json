@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "dependencies": {
     "express": "^4.17.1",
-    "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB"
+    "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "scripts": {
     "dev": "nodemon"
