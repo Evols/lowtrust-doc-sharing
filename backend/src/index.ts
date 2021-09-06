@@ -1,16 +1,20 @@
 
 import express from 'express';
 import { IncomingHttpHeaders } from 'http';
+import { waitForDebugger } from 'inspector';
 import * as lowdb from 'lowdb';
 import { hash, verify } from 'tweetnacl';
 import { decodeUTF8, encodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
+import { v4 as uuid } from 'uuid';
+import { z } from 'zod';
 
 // The challenge consists in finding a message, of which "cypher" is a cypher. The message can be verified thanks to its hash
 // This is used to ensure the client has a given permission: the challenge's cypher is sent to the client, who then sends the deciphered message, and the server verifies it with the hash
-interface IChallenge {
-  cypher: string,
-  hash: string,
-}
+const Challenge = z.object({
+  cypher: z.string(),
+  hash: z.string(),
+});
+type IChallenge = z.infer<typeof Challenge>;
 
 interface IDocument {
   id: string, // uuid
@@ -109,7 +113,31 @@ app.get('/document/:id', async function (req, res) {
   }
 
   // Send the document
-  return res.send(result.doc.cypher);
+  return res.json({
+    cypher: result.doc.cypher,
+    hash: result.doc.hash,
+  });
+});
+
+app.post('/document', async function (req, res) {
+
+  const body = z.object({
+    cypher: z.string(),
+    hash: z.string(),
+    readChallenges: z.array(Challenge),
+    writeChallenges: z.array(Challenge),
+  }).parse(req.body);
+
+  const docId = uuid();
+  db.data?.documents.push({
+    id: docId,
+    ...body,
+  });
+  await db.write();
+
+  return res.json({
+    id: docId,
+  });
 });
 
 app.listen(5000);
