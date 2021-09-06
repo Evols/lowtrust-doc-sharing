@@ -1,26 +1,76 @@
 
 import express from 'express';
+import { IncomingHttpHeaders } from 'http';
 import * as lowdb from 'lowdb';
+import { hash, verify } from 'tweetnacl';
+import { decodeUTF8, encodeUTF8, encodeBase64, decodeBase64 } from 'tweetnacl-util';
 
 // The challenge consists in finding a message, of which "cypher" is a cypher. The message can be verified thanks to its hash
 // This is used to ensure the client has a given permission: the challenge's cypher is sent to the client, who then sends the deciphered message, and the server verifies it with the hash
-interface Challenge {
+interface IChallenge {
   cypher: string,
   hash: string,
 }
 
-interface DbData {
-  documents: {
-    id: string, // uuid
-    cypher: string,
-    hash: string,
-    readChallenges: Challenge[],
-    writeChallenges: Challenge[],
-  }[],
+interface IDocument {
+  id: string, // uuid
+  cypher: string,
+  hash: string,
+  readChallenges: IChallenge[],
+  writeChallenges: IChallenge[],
 }
 
-const adapter = new lowdb.JSONFile<DbData>('db.json');
-const db = new lowdb.Low<DbData>(adapter);
+interface IDbData {
+  documents: IDocument[],
+}
+
+type IAuthCheckResult = {
+  success: true,
+  doc: IDocument,
+} | {
+  success: false,
+  errorCode: number,
+};
+
+function checkAuth(docId: string, headers: IncomingHttpHeaders, db: lowdb.Low<IDbData>, challengeType: 'readChallenges' | 'writeChallenges'): IAuthCheckResult {
+  const authorization = headers.authorization;
+  const authPrefix = 'Challenge ';
+  if (authorization === undefined || !authorization.startsWith(authPrefix)) {
+    return {
+      success: false,
+      errorCode: 400,
+    };
+  }
+
+  const challengeStr = authorization.substr(0, authPrefix.length);
+  const challenge = decodeBase64(challengeStr);
+  const challengeHash = hash(challenge);
+
+  // Get the doc from DB
+  const doc = db.data?.documents.find(doc => doc.id === docId);
+  if (doc === undefined) {
+    return {
+      success: false,
+      errorCode: 404,
+    };
+  }
+  // Check this document has the 
+  if (doc[challengeType].filter(readChallenge => verify(decodeBase64(readChallenge.hash), challengeHash)).length === 0) {
+    return {
+      success: false,
+      errorCode: 401,
+    };
+  }
+
+  return {
+    success: true,
+    doc: doc,
+  };
+
+}
+
+const adapter = new lowdb.JSONFile<IDbData>('db.json');
+const db = new lowdb.Low<IDbData>(adapter);
 
 db.data ??= {
   documents: [],
@@ -28,6 +78,7 @@ db.data ??= {
 
 const app = express();
 
+// Get the challenges for a given document
 app.get('/document/challenges/:id', async function (req, res) {
 
   const docId = req.params['id'];
@@ -45,12 +96,20 @@ app.get('/document/challenges/:id', async function (req, res) {
 
 });
 
-app.get('/document/:id', function (req, res) {
-  res.send('Hello World! doc');
-});
+// Get the given document
+app.get('/document/:id', async function (req, res) {
+  // Check auth and get document
+  const docId = req.params['id'];
+  await db.read();
+  const result = checkAuth(docId, req.headers, db, 'readChallenges');
 
-app.put('/document/:id', function (req, res) {
-  res.send('Hello World!');
+  // If there was an error, handle it
+  if (!result.success) {
+    return res.status(result.errorCode);
+  }
+
+  // Send the document
+  return res.send(result.doc.cypher);
 });
 
 app.listen(5000);
