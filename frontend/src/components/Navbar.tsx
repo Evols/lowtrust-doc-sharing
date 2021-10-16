@@ -105,7 +105,7 @@ export default function Navbar() {
                 fontWeight={600}
                 color="white"
                 bg="#4a9f66"
-                href="/signup" // TODO: marche pas
+                href="/signup"
                 _hover={{
                   bg: '#56b877',
                 }}

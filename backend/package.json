@@ -6,10 +6,11 @@
     "@types/uuid": "^8.3.1",
     "express": "^4.17.1",
     "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB",
+    "ltds_common": "file:../common",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
     "uuid": "^8.3.2",
-    "zod": "^3.8.2"
+    "zod": "^3.9.8"
   },
   "scripts": {
     "dev": "nodemon"
