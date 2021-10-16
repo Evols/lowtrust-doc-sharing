@@ -1,35 +1,42 @@
 
 import { useState } from 'react';
+import { BoxKeyPair, SignKeyPair } from 'tweetnacl';
 import { createContainer } from 'unstated-next';
 import { registerWithPassword as cryptoRegisterWithPassword, loginWithPassword as cryptoLoginWithPassword } from '../crypto/highLevel';
 
 
 function useKeyStore() {
-  const [masterSymKey, setMasterSymKey] = useState<Uint8Array | undefined>(undefined);
+  const [masterSecretKey, setMasterSecretKey] = useState<Uint8Array | undefined>(undefined);
+  const [masterBoxKeyPair, setMasterBoxKeyPair] = useState<BoxKeyPair | undefined>(undefined);
+  const [masterSignKeyPair, setMasterSignKeyPair] = useState<SignKeyPair | undefined>(undefined);
   const [url, setUrl] = useState<string>('http://localhost:5000');
 
   async function registerWithPassword(email: string, password: string) {
-    const masterKey = await cryptoRegisterWithPassword(url, email, password);
-    if (masterKey === false) {
+    const registerResult = await cryptoRegisterWithPassword(url, email, password);
+    if (registerResult === false) {
       console.log('User already exists');
       return;
     }
-    setMasterSymKey(masterKey);
+    setMasterSecretKey(registerResult.masterSecretKey);
+    setMasterBoxKeyPair(registerResult.masterBoxKeyPair);
+    setMasterSignKeyPair(registerResult.masterSignKeyPair);
   }
 
   async function loginWithPassword(email: string, password: string) {
-    const masterKey = await cryptoLoginWithPassword(url, email, password);
-    if (masterKey === false) {
-      console.log('Wrong password or user doesn\'t exist');
+    const loginResult = await cryptoLoginWithPassword(url, email, password);
+    if (loginResult === false) {
+      console.log('Wrong password or user doesn\'t exist or your credentials were tampered with');
       return;
     }
-    setMasterSymKey(masterKey);
+    setMasterSecretKey(loginResult.masterSecretKey);
+    setMasterBoxKeyPair(loginResult.masterBoxKeyPair);
+    setMasterSignKeyPair(loginResult.masterSignKeyPair);
   }
 
   return {
     registerWithPassword,
     loginWithPassword,
-    isLoggedIn: masterSymKey !== undefined,
+    isLoggedIn: masterSecretKey !== undefined,
   };
 }
 
