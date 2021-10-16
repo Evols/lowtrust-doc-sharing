@@ -1,7 +1,9 @@
 
+import { zeroLayout } from 'framer-motion/types/render/utils/state';
 import { IChallenge } from 'ltds_common/dist/schemas';
 import { randomBytes, secretbox, hash } from 'tweetnacl';
-import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
+import { encodeBase64, decodeBase64, decodeUTF8 } from 'tweetnacl-util';
+import { z } from 'zod';
 import { kdf } from './common';
 
 const challengeKeyDerivationLength = 32;
@@ -30,10 +32,19 @@ export async function buildSecretBasedChallenge(secret: Uint8Array): Promise<ICh
 }
 
 // Builds the solution of a challenge that was created by buildSecretBasedChallenge
-export async function buildSecretBasedSolution(secret: Uint8Array, helper: string): Promise<string> {
-  const helperBin = decodeBase64(helper);
-  const kdfSalt = helperBin.subarray(0, secretbox.keyLength);
-  const hashSalt = helperBin.subarray(secretbox.keyLength, secretbox.keyLength + challengeKeyDerivationLength);
-  const solution = await _buildSecretBasedSolution(secret, kdfSalt, hashSalt);
+export async function buildSecretBasedSolution(secret: Uint8Array, helper: string): Promise<string | undefined> {
+
+  const helperObj = JSON.parse(helper);
+  const helperParse = z.object({
+    type: z.literal('secret'),
+    kdfSalt: z.string(),
+    hashSalt: z.string(),
+  }).safeParse(helperObj);
+
+  if (helperParse.success === false) {
+    return undefined;
+  }
+
+  const solution = await _buildSecretBasedSolution(secret, decodeBase64(helperParse.data.kdfSalt), decodeBase64(helperParse.data.hashSalt));
   return encodeBase64(solution);
 }

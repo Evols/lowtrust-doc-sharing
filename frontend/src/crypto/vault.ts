@@ -3,16 +3,12 @@ import { randomBytes, secretbox, hash } from 'tweetnacl';
 import { decodeUTF8, encodeBase64 } from 'tweetnacl-util';
 import { kdf } from './common';
 
-export async function passwordToSymKey(password: string) {
-  const salt = randomBytes(secretbox.keyLength);
-  return {
+export async function passwordToSymKey(password: string, salt: Uint8Array) {
+  return await kdf(
+    decodeUTF8(password),
     salt,
-    derivedKey: await kdf(
-      decodeUTF8(password),
-      salt,
-      secretbox.keyLength,
-    ),
-  };
+    secretbox.keyLength,
+  );
 }
 
 export type TKeyVault<MetadataType extends { type: string }> = {

@@ -7,6 +7,7 @@ import { decodeBase64 } from 'tweetnacl-util';
 import { z } from 'zod';
 import { IDocument, Challenge } from 'ltds_common/dist/schemas';
 import cors from 'cors';
+import morgan from 'morgan';
 
 type IAuthCheckResult = {
   success: true,
@@ -18,7 +19,7 @@ type IAuthCheckResult = {
 
 function checkAuth(doc: IDocument, headers: IncomingHttpHeaders, challengeType: 'readChallenges' | 'writeChallenges'): IAuthCheckResult {
   const authorization = headers.authorization;
-  const authPrefix = 'Challenge ';
+  const authPrefix = 'Challenges ';
   if (authorization === undefined || !authorization.startsWith(authPrefix)) {
     return {
       success: false,
@@ -26,12 +27,15 @@ function checkAuth(doc: IDocument, headers: IncomingHttpHeaders, challengeType: 
     };
   }
 
-  const challengeStr = authorization.substr(0, authPrefix.length);
-  const challenge = decodeBase64(challengeStr);
-  const challengeHash = hash(challenge);
+  const challengeStrs = authorization.substr(authPrefix.length, authorization.length).split(' ').filter((_, i) => i < doc[challengeType].length); // Limit the number of challenges
+  const challengesHashes = challengeStrs.map(challenge => hash(decodeBase64(challenge)));
 
-  // Check this document has the 
-  if (doc[challengeType].filter(readChallenge => verify(decodeBase64(readChallenge.hash), challengeHash)).length === 0) {
+  // Check this document has at least one valid challenge
+  if (doc[challengeType].filter(
+    readChallenge => challengesHashes.filter(
+      sentChallengeHash => verify(decodeBase64(readChallenge.hash), sentChallengeHash)
+    ).length > 0
+  ).length === 0) {
     return {
       success: false,
       errorCode: 401,
@@ -40,7 +44,7 @@ function checkAuth(doc: IDocument, headers: IncomingHttpHeaders, challengeType: 
 
   return {
     success: true,
-    doc: doc,
+    doc,
   };
 
 }
@@ -49,7 +53,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 
 // Get the challenges for a given document
 app.get('/document/challenges/:id', async function (req, res) {
@@ -82,20 +87,15 @@ app.get('/document/:id', async function (req, res) {
 
   // If there was an error, handle it
   if (!result.success) {
-    return res.status(result.errorCode);
+    return res.status(result.errorCode).end();
   }
 
   // Send the document
-  return res.json({
-    cypher: result.doc.cypher,
-    hash: result.doc.hash,
-  });
+  return res.json(result.doc);
 });
 
 // Creates a document. An alternative way of implementing this might be using a "right to post" token, bought separately using crypto
 app.post('/document', async function (req, res) {
-
-  console.log('/document req.body:', req.body);
 
   const body = z.object({
     cypher: z.string(),
@@ -134,6 +134,11 @@ app.post('/user', async function (req, res) {
     email: z.string(),
     initialDocId: z.string(),
   }).parse(req.body);
+
+  const existingUser = await getUser(body.email);
+  if (existingUser !== undefined) {
+    return res.status(403).end();
+  }
 
   const userId = await createUser(body);
 
