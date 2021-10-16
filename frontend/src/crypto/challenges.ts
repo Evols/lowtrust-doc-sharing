@@ -20,7 +20,11 @@ export async function buildSecretBasedChallenge(secret: Uint8Array): Promise<ICh
   const solution = await _buildSecretBasedSolution(secret, kdfSalt, hashSalt);
   const hashed = hash(solution);
   return {
-    helper: encodeBase64(Uint8Array.from([ ...kdfSalt, ...hashSalt, ])),
+    helper: JSON.stringify({
+      type: 'secret',
+      kdfSalt: encodeBase64(kdfSalt),
+      hashSalt: encodeBase64(hashSalt),
+    }),
     hash: encodeBase64(hashed),
   };
 }

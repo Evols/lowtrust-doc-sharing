@@ -1,11 +1,26 @@
 {
   "documents": [
     {
-      "id": "abcd",
-      "cypher": "",
+      "id": "3234ecfa-e044-4965-ad5f-156df445cb27",
+      "cypher": "{\"vaults\":[{\"metadata\":{\"type\":\"failsafe\"},\"cypher\":\"GwDIGL+7eFkbRiyeG6hkMCCDtSCx+ccted/KcCorDBs9/zcZVJYthv0HIrngKFq6l9H1tlhccM5jS2n7S1X5eouz754QkNEG1Z2nd11QiJU4v79UPZcRD0aAf+NhpgdXBWEhWVEcQSRrHzRxwtKN/IVUNLsxskXNDIkpj5fbSLG408p+KGOH6w9narFJjhm8Lg==\",\"nonce\":\"38OVGgmEmndVw489u34ENUifNMBUn7WH\",\"hash\":\"VgsllbWTDXL7hAjDDD8uzzoHrDX6mm66OdVnQ7/NPVsuR8wKCDcPBKXeA0enYfNgbA6qMcmkoMt1Fmvpx0sDQQ==\"},{\"metadata\":{\"type\":\"password\",\"salt\":\"rsxLtNhhqWVCBlzucll1EMH3bDTCt/93A7WuRcWFTeg=\"},\"cypher\":\"bTivP72GFoAdUopqCBJtwT+yOSGLs2/WNNWg7ipt3r0NFykGihV6gS06a+VwU6QO9swUvv5zx68djD9kBtUbZYsUefHIduSU1RK8eZcMOXahebsdac434xL2ELyxBFHzWtgrIniPCMYIRLqHkbjhMlbQBkweMaou83qot9NG1UmML4uisba8dqYzAKxWbp1oNA==\",\"nonce\":\"aSrnUiW3EMGYdZERVETCyceBGmdXWPHt\",\"hash\":\"VgsllbWTDXL7hAjDDD8uzzoHrDX6mm66OdVnQ7/NPVsuR8wKCDcPBKXeA0enYfNgbA6qMcmkoMt1Fmvpx0sDQQ==\"}]}",
       "hash": "",
       "readChallenges": [],
-      "writeChallenges": []
+      "writeChallenges": [
+        {
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"PMSaelTqpX3KJq63AMw4d1ub+Wy2zGYctLvslxc362A=\",\"hashSalt\":\"kiZMVSkwjFkzw5Yke0Mc9GAe7/aQ7sHSdCnlvyPHlh5hZUVy7oTEFWJpffLyzoLEtAZGqrleV5vUG2W4oXLYJw==\"}",
+          "hash": "kiZJ7sohLFwkZLlNjG62FufeVPrhbQR5U9y9zFraRcrO7dnSjpwjG+eFmY4YwrhUzzbhmVVWqLIkmEBQ8dOx3w=="
+        },
+        {
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"VQiy+AcKSc0NsmXi+ACwcv0NDoTKWvZnCsDhHJfX2sg=\",\"hashSalt\":\"xoysyfEU/XsaR8QlS/pfdq0GeLY3GRH3ZT88hxt6nJuKasxrHdSF5FfTbjmWi4j1sk6SHbx4e/Thi+7sbnLesQ==\"}",
+          "hash": "NGI2LQ++wEhE33XJ3sAiyUNMQNeHk5LQACIePFdySqkJ8wG9EmPuwB6UuIIBKrFRd+qRua/8Llx7lHSpbKVOEw=="
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "email": "a",
+      "initialDocId": "3234ecfa-e044-4965-ad5f-156df445cb27"
     }
   ]
 }

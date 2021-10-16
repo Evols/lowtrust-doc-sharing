@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 // Returns the id of the document
 export async function postDocument(url: string, doc: Omit<IDocument, 'id'>): Promise<string> {
+  console.log('postDocument doc:', doc);
   const res = await axios.post(
     `${url}/document`,
     doc,

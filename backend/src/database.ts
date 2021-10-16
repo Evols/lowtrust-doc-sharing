@@ -21,7 +21,7 @@ const db = {
     this.data = DbData.parse(JSON.parse(await readFile(dbPath, 'utf-8')));
   },
   write: async function() {
-    await writeFile(dbPath, JSON.stringify(DbData.parse(this.data)), { encoding: 'utf-8' });
+    await writeFile(dbPath, JSON.stringify(DbData.parse(this.data), null, 2), { encoding: 'utf-8' });
   },
 };
 

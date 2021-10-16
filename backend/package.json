@@ -6,6 +6,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@types/uuid": "^8.3.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "ltds_common": "file:../common",
     "tweetnacl": "^1.0.3",

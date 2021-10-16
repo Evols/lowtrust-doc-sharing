@@ -6,6 +6,7 @@ import { hash, verify } from 'tweetnacl';
 import { decodeBase64 } from 'tweetnacl-util';
 import { z } from 'zod';
 import { IDocument, Challenge } from 'ltds_common/dist/schemas';
+import cors from 'cors';
 
 type IAuthCheckResult = {
   success: true,
@@ -45,6 +46,10 @@ function checkAuth(doc: IDocument, headers: IncomingHttpHeaders, challengeType: 
 }
 
 const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded());
 
 // Get the challenges for a given document
 app.get('/document/challenges/:id', async function (req, res) {
@@ -90,6 +95,8 @@ app.get('/document/:id', async function (req, res) {
 // Creates a document. An alternative way of implementing this might be using a "right to post" token, bought separately using crypto
 app.post('/document', async function (req, res) {
 
+  console.log('/document req.body:', req.body);
+
   const body = z.object({
     cypher: z.string(),
     hash: z.string(),
@@ -125,8 +132,6 @@ app.post('/user', async function (req, res) {
 
   const body = z.object({
     email: z.string(),
-    cipheredPassword: z.string(),
-    passwordAdditionalInfo: z.string(),
     initialDocId: z.string(),
   }).parse(req.body);
 
