@@ -1,5 +1,5 @@
 
-import { IChallenge } from 'ltds_common/schemas';
+import { IChallenge } from 'ltds_common/dist/schemas';
 import { randomBytes, secretbox, hash } from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import { kdf } from './common';

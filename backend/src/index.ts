@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { hash, verify } from 'tweetnacl';
 import { decodeBase64 } from 'tweetnacl-util';
 import { z } from 'zod';
-import { IDocument, Challenge } from 'ltds_common/schemas';
+import { IDocument, Challenge } from 'ltds_common/dist/schemas';
 
 type IAuthCheckResult = {
   success: true,

@@ -11,16 +11,18 @@ export const Challenge = z.object({
 export type IChallenge = z.infer<typeof Challenge>;
 
 // Represents a document
-export interface IDocument {
-  id: string, // uuid
-  cypher: string, // Cypher of the data
-  hash: string, // Hash of the cypher
-  readChallenges: IChallenge[], // Challenge to complete by the client to read the document
-  writeChallenges: IChallenge[], // Challenge to complete by the client to edit the document
-}
+export const Document = z.object({
+  id: z.string(), // uuid
+  cypher: z.string(), // Cypher of the data
+  hash: z.string(), // Hash of the cypher
+  readChallenges: z.array(Challenge), // Challenge to complete by the client to read the document
+  writeChallenges: z.array(Challenge), // Challenge to complete by the client to edit the document
+});
+export type IDocument = z.infer<typeof Document>;
 
 // Represents an user. Basically a pointer to a document (you can actually use a different IAM service, the only thing you need it a link to the auth document)
-export interface IUser {
-  email: string,
-  initialDocId: string, // The id of the doc containing the credentials
-}
+export const User = z.object({
+  email: z.string(),
+  initialDocId: z.string(), // The id of the doc containing the credentials
+});
+export type IUser = z.infer<typeof User>;

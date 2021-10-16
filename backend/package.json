@@ -1,11 +1,12 @@
 {
   "name": "lowtrust-doc-sharing-backend",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "version": "0.1.0",
   "dependencies": {
     "@types/uuid": "^8.3.1",
     "express": "^4.17.1",
-    "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB",
     "ltds_common": "file:../common",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",

@@ -1,7 +1,7 @@
 
 import { randomBytes, secretbox, box } from 'tweetnacl';
 import { decodeUTF8 } from 'tweetnacl-util';
-import { IChallenge } from 'ltds_common/schemas';
+import { IChallenge } from 'ltds_common/dist/schemas';
 import { postDocument, postUser } from '../utils/backend';
 import { buildSecretBasedChallenge } from './challenges';
 import { passwordToSymKey, genKeyVault, TKeyVault } from './vault';

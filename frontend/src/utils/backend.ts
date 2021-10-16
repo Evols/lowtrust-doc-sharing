@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import { IDocument, IUser } from 'ltds_common/schemas';
+import { IDocument, IUser } from 'ltds_common/dist/schemas';
 import { z } from 'zod';
 
 // Returns the id of the document
