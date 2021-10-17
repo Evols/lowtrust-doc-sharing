@@ -40,6 +40,10 @@ function useKeyStore() {
     sessionStorage.removeItem('directoryDocId');
   }
 
+  function signOut() {
+    removeStoredKeys();
+  }
+
   function gatherKeysFromStorage() {
     const authenticated = sessionStorage.getItem('authenticated');
     if (authenticated === 'true') {
@@ -97,6 +101,7 @@ function useKeyStore() {
   return {
     registerWithPassword,
     loginWithPassword,
+    signOut,
     directoryDocId,
     isLoggedIn,
   };

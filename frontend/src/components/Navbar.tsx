@@ -25,7 +25,7 @@ import { useHistory } from 'react-router';
 export default function Navbar() {
 
   const { isOpen, onToggle } = useDisclosure();
-  const { isLoggedIn } = KeyStore.useContainer();
+  const { isLoggedIn, signOut } = KeyStore.useContainer();
   const history = useHistory();
 
   return (
@@ -72,8 +72,8 @@ export default function Navbar() {
 
         <Stack
           flex={{ base: 1, md: 0 }}
-          justify={'flex-end'}
-          direction={'row'}
+          justify="flex-end"
+          direction="row"
           spacing={6}
         >
 
@@ -81,9 +81,13 @@ export default function Navbar() {
             isLoggedIn
             ? (
               <Button
-                fontSize={'sm'}
+                fontSize="sm"
                 fontWeight={400}
-                variant={'link'}
+                variant="link"
+                onClick={() => {
+                  signOut();
+                  history.push('/signin');
+                }}
               >
                 Log out
               </Button>  
