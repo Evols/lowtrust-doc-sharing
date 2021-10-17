@@ -53,7 +53,10 @@ export default function SignUp({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              await registerWithPassword(email, password, history);
+              if (await registerWithPassword(email, password)) {
+                console.log('registerWithPassword redirect');
+                history.push('/signup/completed');
+              }
             }}
           >
             Submit

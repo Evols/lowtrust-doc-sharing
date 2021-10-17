@@ -20,10 +20,13 @@ import {
   CloseIcon,
 } from '@chakra-ui/icons';
 import { KeyStore } from '../state/KeyStore';
+import { useHistory } from 'react-router';
 
 export default function Navbar() {
+
   const { isOpen, onToggle } = useDisclosure();
   const { isLoggedIn } = KeyStore.useContainer();
+  const history = useHistory();
 
   return (
     <Box>
@@ -59,7 +62,7 @@ export default function Navbar() {
             fontWeight={500}
             fontSize={'md'}
           >
-            Notrust doc sharing
+            Low-trust doc sharing
           </Text>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
@@ -78,40 +81,40 @@ export default function Navbar() {
             isLoggedIn
             ? (
               <Button
-                as={'a'}
                 fontSize={'sm'}
                 fontWeight={400}
                 variant={'link'}
-                href={'#'}
               >
                 Log out
               </Button>  
             )
             : <>
               <Button
-                as="a"
                 fontSize="sm"
                 fontWeight={400}
                 variant="link"
-                href="/signin"
+                onClick={() => history.push('/signin')}
               >
                 Sign In
               </Button>
     
-              <Button
-                as="a"
-                display={{ base: 'none', md: 'inline-flex' }}
-                fontSize="sm"
-                fontWeight={600}
-                color="white"
-                bg="#4a9f66"
-                href="/signup"
-                _hover={{
-                  bg: '#56b877',
-                }}
+              <Link
+                to="/signup"
               >
-                Sign Up
-              </Button>
+                <Button
+                  display={{ base: 'none', md: 'inline-flex' }}
+                  fontSize="sm"
+                  fontWeight={600}
+                  color="white"
+                  bg="#4a9f66"
+                  _hover={{
+                    bg: '#56b877',
+                  }}
+                  onClick={() => history.push('/signup')}
+                >
+                  Sign Up
+                </Button>
+              </Link>
             </>
           }
         </Stack>

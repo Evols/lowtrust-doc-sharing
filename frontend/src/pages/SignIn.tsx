@@ -51,7 +51,9 @@ export default function SignIn({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              await loginWithPassword(email, password, history);
+              if (await loginWithPassword(email, password)) {
+                history.push('/documents');
+              }
             }}
           >
             Submit

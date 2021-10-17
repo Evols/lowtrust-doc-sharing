@@ -9,6 +9,7 @@ import { KeyStore } from './state/KeyStore';
 import SignIn from './pages/Signin';
 import SignUpCompleted from './pages/SignUpCompleted';
 import NotFound from './pages/NotFound';
+import Documents from './pages/Documents';
 
 export function App() {
   return (
@@ -20,6 +21,10 @@ export function App() {
             <Navbar />
 
             <Switch>
+
+              <Route path="/documents" exact>
+                <Documents />
+              </Route>
 
               <Route path="/signup/completed" exact>
                 <SignUpCompleted />
