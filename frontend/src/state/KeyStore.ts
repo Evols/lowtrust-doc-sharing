@@ -9,7 +9,10 @@ function useKeyStore() {
   const [masterSecretKey, setMasterSecretKey] = useState<Uint8Array | undefined>(undefined);
   const [masterBoxKeyPair, setMasterBoxKeyPair] = useState<BoxKeyPair | undefined>(undefined);
   const [masterSignKeyPair, setMasterSignKeyPair] = useState<SignKeyPair | undefined>(undefined);
+  const [directoryDocId, setDirectoryDocId] = useState<string | undefined>(undefined);
   const [url, setUrl] = useState<string>('http://localhost:5000');
+  
+  console.log('directoryDocId:', directoryDocId);
 
   async function registerWithPassword(email: string, password: string) {
     const registerResult = await cryptoRegisterWithPassword(url, email, password);
@@ -31,6 +34,7 @@ function useKeyStore() {
     setMasterSecretKey(loginResult.masterSecretKey);
     setMasterBoxKeyPair(loginResult.masterBoxKeyPair);
     setMasterSignKeyPair(loginResult.masterSignKeyPair);
+    setDirectoryDocId(loginResult.directoryDocId);
   }
 
   return {

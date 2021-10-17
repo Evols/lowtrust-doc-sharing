@@ -33,16 +33,18 @@ export const KeyVaultContent = z.object({
   masterSecretKey: z.string(),
   masterBoxKey: z.string(),
   masterSignKey: z.string(),
+  directoryId: z.string(),
 });
 
 export type IKeyVaultContent = z.infer<typeof KeyVaultContent>;
 
-export function genKeyVault(masterSecretKey: Uint8Array, masterBoxKey: Uint8Array, masterSignKey: Uint8Array, vaultSecretKey: Uint8Array, metadata: IMetadataType): IKeyVault {
+export function genKeyVault(masterSecretKey: Uint8Array, masterBoxKey: Uint8Array, masterSignKey: Uint8Array, directoryId: string, vaultSecretKey: Uint8Array, metadata: IMetadataType): IKeyVault {
 
   const keyVaultContent: IKeyVaultContent = {
     masterSecretKey: encodeBase64(masterSecretKey),
     masterBoxKey: encodeBase64(masterBoxKey),
     masterSignKey: encodeBase64(masterSignKey),
+    directoryId,
   };
 
   const jsonBytes = decodeUTF8(JSON.stringify(keyVaultContent));

@@ -18,27 +18,30 @@ export async function registerWithPassword(url: string, email: string, password:
   const masterSecretKey = randomBytes(secretbox.keyLength);
   const masterBoxKeyPair = box.keyPair();
   const masterSignKeyPair = sign.keyPair();
+
+  const directoryDocId = await createDocumentWithMasterSecretKey(url, masterSecretKey, decodeUTF8(JSON.stringify([])));
+
   const failsafeSecretKey = randomBytes(secretbox.keyLength);
   const passwordSalt = randomBytes(secretbox.keyLength);
   const loginSecretKey = await passwordToSecretKey(password, passwordSalt);
 
-  const failsafeVault = genKeyVault(masterSecretKey, masterBoxKeyPair.secretKey, masterSignKeyPair.secretKey, failsafeSecretKey, { type: 'failsafe' });
-  const passwordVault = genKeyVault(masterSecretKey, masterBoxKeyPair.secretKey, masterSignKeyPair.secretKey, loginSecretKey, { type: 'password', salt: encodeBase64(passwordSalt) });
+  const failsafeVault = genKeyVault(masterSecretKey, masterBoxKeyPair.secretKey, masterSignKeyPair.secretKey, directoryDocId, failsafeSecretKey, { type: 'failsafe' });
+  const passwordVault = genKeyVault(masterSecretKey, masterBoxKeyPair.secretKey, masterSignKeyPair.secretKey, directoryDocId, loginSecretKey, { type: 'password', salt: encodeBase64(passwordSalt) });
   const vaults: IKeyVault[] = [ failsafeVault, passwordVault ];
 
-  const challenges: IChallenge[] = [
+  const vaultsChallenges: IChallenge[] = [
     await buildSecretBasedChallenge(failsafeSecretKey),
     await buildSecretBasedChallenge(decodeUTF8(password)),
   ];
 
   // The idea is that these documents can be viewed by anyone, but edited by the owner only
-  const docId = await postDocument(
+  const vaultsDocId = await postDocument(
     url,
     {
       cypher: JSON.stringify({ vaults }),
       hash: '', // N/A
-      readChallenges: challenges,
-      writeChallenges: challenges,
+      readChallenges: vaultsChallenges,
+      writeChallenges: vaultsChallenges,
     },
   );
 
@@ -46,7 +49,7 @@ export async function registerWithPassword(url: string, email: string, password:
     url,
     {
       email,
-      initialDocId: docId,
+      initialDocId: vaultsDocId,
     },
   );
 
@@ -91,7 +94,6 @@ export async function loginWithPassword(url: string, email: string, password: st
   }
 
   const loginSecretKey = await passwordToSecretKey(password, decodeBase64(usingPasswordVault.metadata.salt));
-  console.log('loginSymKey:', loginSecretKey);
   const rawDecipheredVault = secretbox.open(
     decodeBase64(usingPasswordVault.cypher),
     decodeBase64(usingPasswordVault.nonce),
@@ -109,5 +111,30 @@ export async function loginWithPassword(url: string, email: string, password: st
     masterSecretKey: decodeBase64(decipheredVault.masterSecretKey),
     masterBoxKeyPair: box.keyPair.fromSecretKey(decodeBase64(decipheredVault.masterBoxKey)),
     masterSignKeyPair: sign.keyPair.fromSecretKey(decodeBase64(decipheredVault.masterSignKey)),
+    directoryDocId: decipheredVault.directoryId,
   };
+}
+
+export async function createDocumentWithMasterSecretKey(url: string, masterSecretKey: Uint8Array, docContent: Uint8Array) {
+  
+  const challenges: IChallenge[] = [
+    await buildSecretBasedChallenge(masterSecretKey),
+  ];
+
+  const nonce = randomBytes(secretbox.nonceLength);
+
+  const directoryDocId = await postDocument(
+    url,
+    {
+      cypher: JSON.stringify({
+        nonce: encodeBase64(nonce),
+        box: encodeBase64(secretbox(docContent, nonce, masterSecretKey)),
+      }),
+      hash: '',
+      readChallenges: challenges,
+      writeChallenges: challenges,
+    },
+  );
+
+  return directoryDocId;
 }

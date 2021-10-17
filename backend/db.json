@@ -1,27 +1,44 @@
 {
   "documents": [
     {
-      "id": "04eb3663-5a05-4c86-bf9c-e38436dc8876",
-      "cypher": "{\"vaults\":[{\"metadata\":{\"type\":\"failsafe\"},\"cypher\":\"bWyxR+lNpmXpydz56vK96vKjyvpV7O1/WfFDx5gyQnMkyeVyRaTERmOUMbCckcnFbAbd77GahJ36J6SCwORsriu2Yf+HVi2jy1ShfEPNoVWtTGIR3AHa831yAJPPl+T3wbL8Ye0U1YJKeO46dMCYaAQLkNROOqjQocL/4ZRqpN84u2OXERKNh0HrCD+ABO7adRK/WMLrkXHrk0ykPIyd//zJuVI8N6uuX26mrIoW25MrNCmnT4h5WgjayIWUSwzbn/K/UtUcpgZ8WCEge+8nAksOVmu1A5r6pd7Ugctc+jAfL1eUBxuRu78+fzvL3qzGEEEdL2nbNaC4NxI=\",\"nonce\":\"GQ+BZ266Bddu7DbN3Jeh9I6LWXbYqY7x\"},{\"metadata\":{\"type\":\"password\",\"salt\":\"5SdEI2PMJp0a/LSWuhCAVJ8bjoWwytbEI8kg5Wu0Ajg=\"},\"cypher\":\"0Xm/RudPF0aa6PNL54g9kMdTv/u4ehq963eZuu1ThO7rCIWy1FQvOZZlqj0XqcGIttuMRtU74NavClfrYnPRIWatu7amM0rkS7Dpo9ETsRnLWBHLTcHqbQ8z7mhgyUft3PNoxycOmp/ZxZkbGodqNXA+ZMxMNcQuqK6aKdMBOHdmu6v8U3SOPNFzx7RHJuyhCDkDxgvl174sggIW056kMgK16mNKwHPgZKG50OLboC628f58lGv+YTEn9ir/EYMsY/S8puxVBWImQAXkSXJHtGx7ikN1xXkmzeu1EFqloVn+IZSax2NsoRgn+PUSRxyGOouO6MhKaxaOJy4=\",\"nonce\":\"eVD8IyXg50SWAJQAaHlzku9PxKgJD0I7\"}]}",
+      "id": "744de927-d9c3-44d0-b045-d5a20c59482f",
+      "cypher": "{\"nonce\":\"sIC3UCaTM8eDeqOSPGXYtZNBCTZPNMbG\",\"box\":\"pF5IisrI2+BfKlCL8XFVbjJG\"}",
       "hash": "",
       "readChallenges": [
         {
-          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"I/s2Jfvmye//HswlpwkbHujnwsgfZyiTZ9wl4urI9Vc=\",\"hashSalt\":\"5E17vNO+YUzVsmY1iMfXB4l1OzJhWOnuz/Gu58AySgN5ii2h0K4Z+FUnvvb5lB034mO8WLOOQamvv++vh+vI3Q==\"}",
-          "hash": "esbtynAcNTu5gs0y6gAG/MQRSmEVVWBaYbaq+/EFQdWHxrUWMm/NwW/PjZI9ZyN2J+eLmFnlFqB+dqaLwR0B6A=="
-        },
-        {
-          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"11aAvsrBxJTvmrYJZb+XBU4jGLf28kbBMFepRf8FXow=\",\"hashSalt\":\"+FNxWzfEDKpcISPAjH/F7qJTuBi9xY3lNydBjpVNWPVGx3kl98NirOMtiEb+TO9Gkx1RnJpA3VnLiTD0NmWmWg==\"}",
-          "hash": "gk/aDZsWwoiwfgt4uOGe41hq5GSElymdnoPJ3gmemrTpgWqQWN7aSKsYbn824eZhgZ9dpVQZQKpufoU5co+MVg=="
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"OZoYU9UM6s/+aSI61JF2sludFK94tswoosh3FKaPl2Q=\",\"hashSalt\":\"A+83U5Cm91pRZHgnbi8DSP3ZxLv28+Ybv45heoFhsbsFGGl3mMHS8qaT+R4/6nv23g6DiqpeOn/CB0ZdSafEcA==\"}",
+          "hash": "K6I+00PSypaiM8uIgj20MMuVePh0vE2m4YZg+A2ZHfKDZmkSOwX3Ms666n0T5FiCduMkEr/0covV6u7wO0fD2g=="
         }
       ],
       "writeChallenges": [
         {
-          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"I/s2Jfvmye//HswlpwkbHujnwsgfZyiTZ9wl4urI9Vc=\",\"hashSalt\":\"5E17vNO+YUzVsmY1iMfXB4l1OzJhWOnuz/Gu58AySgN5ii2h0K4Z+FUnvvb5lB034mO8WLOOQamvv++vh+vI3Q==\"}",
-          "hash": "esbtynAcNTu5gs0y6gAG/MQRSmEVVWBaYbaq+/EFQdWHxrUWMm/NwW/PjZI9ZyN2J+eLmFnlFqB+dqaLwR0B6A=="
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"OZoYU9UM6s/+aSI61JF2sludFK94tswoosh3FKaPl2Q=\",\"hashSalt\":\"A+83U5Cm91pRZHgnbi8DSP3ZxLv28+Ybv45heoFhsbsFGGl3mMHS8qaT+R4/6nv23g6DiqpeOn/CB0ZdSafEcA==\"}",
+          "hash": "K6I+00PSypaiM8uIgj20MMuVePh0vE2m4YZg+A2ZHfKDZmkSOwX3Ms666n0T5FiCduMkEr/0covV6u7wO0fD2g=="
+        }
+      ]
+    },
+    {
+      "id": "f5d686db-034f-4143-b4a7-2c9da02b3280",
+      "cypher": "{\"vaults\":[{\"metadata\":{\"type\":\"failsafe\"},\"cypher\":\"65y33hpGRHXU2t0FgINTjW6YEUEHPzXp4UprQATzM4XG/U7Ew6hg3byG1SwOa6pAqfKClahoi2iY18aifHryBEHYHjpev4KkGuqsyIZtV8YwyUIZhvs/IzYbY1L93726m2GXpw/2vIEY5G0AYatKPSxjWNVIebGLaPqlrTteTOUTmpnua+y+477dXRPVqJ4ul2A5RjWQtckihz34lXhDw0QIF6gFZbOv3uDtBlD8cOn3bBSILdldPUmMStzkNtW8VushUksfiAMlY6qLDIStJiRfh/ZvWX7MpHFHZtOy4wniT+NDm5Tc+k7JvvVejiBU85TmMNGyo8bOhPnSALkVWxUDGNEoHt+zeuHL/ct8HRtJSqnQg3q0ZL7AvQdiBvhaeaPf0N5tVVOwchlyq5i2iQ==\",\"nonce\":\"13SsnER8ymlk18gt9VwMkrk9hOknFdBg\"},{\"metadata\":{\"type\":\"password\",\"salt\":\"2YbpWywWJ2iOaJh9DHBOWGt0DR35PUdV293CkKBftr8=\"},\"cypher\":\"WMedOGKGwUeWc44hXyMEzU4JTVJ3sVN3u6L2yueVzdVmVrL6Ga3tplGw4ez92XuECbsF0FNHt3xiHZqv6MTu0ZGHahIajCWuV84qSf1wWEjPph09DCVYWLrv+Dq4x2ySKv4HmZh+cftncdNyBSUJqsusPYV0tvWVZgiBE+8bvPmeXpdtkMrTaIFQN4zK+5mlmFMYNe/2qX3byLiOSr2DrAe9+KH/t0PU4YAxaG33pvIImB3K6ZqOOsmRyA93nqOTbsmF7dk/87/qCIy3UuqFaWBixuD++xMH4MWxv7HN4fFd3YXujb9/6ha95ZwNuJnc30etsAGZ7C0YfrM77OQJ7v+3hrZbnzGOcZFf3P22jdLd0mI1zBZym/w+fgFlhbguuqxi+Gu7rYJm4EdpSAA9IA==\",\"nonce\":\"Jzatwx52o4v1faIDkxUhxHYMk3ItvKv7\"}]}",
+      "hash": "",
+      "readChallenges": [
+        {
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"bkYiM7DpEYmU6kqTnR8foRNb0bFxx9w/fZ+pRqxsbXE=\",\"hashSalt\":\"jQeDCW131nHeccb9rU99kNwH9gE2HjcjPdFHqRoCJ4i6DUPfFhblmZ03HDOKs69/ID3ZDnlIh5MbhHYInOhaZg==\"}",
+          "hash": "7/mtk1E0nxARmuT8Spubi0r5Uo/FiaaBeJlnm0Fhq9lCbuOLeqDcDUFGwb4CHk0a0ftoBzF+ah7jKNDWUmxbDA=="
         },
         {
-          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"11aAvsrBxJTvmrYJZb+XBU4jGLf28kbBMFepRf8FXow=\",\"hashSalt\":\"+FNxWzfEDKpcISPAjH/F7qJTuBi9xY3lNydBjpVNWPVGx3kl98NirOMtiEb+TO9Gkx1RnJpA3VnLiTD0NmWmWg==\"}",
-          "hash": "gk/aDZsWwoiwfgt4uOGe41hq5GSElymdnoPJ3gmemrTpgWqQWN7aSKsYbn824eZhgZ9dpVQZQKpufoU5co+MVg=="
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"PXgwRzrhdPsDDmWrZcMPUGDI3CtrPxkyF68S4Xza/u8=\",\"hashSalt\":\"VRSg+jc3J/tCvbDDs2+274UfqeWbaH0aidIP51ndDkSoTmuNRDBm1lD2HtYTTB6GeWie9r8pXfcVTrTRs5hD/w==\"}",
+          "hash": "JEdX5JHN3WJofs7OsSLk9nEqySlL4/AzBGxQ7XfHVc25E4akwcz1HaohjblumBsLR+9FQaxJA2RayzcyPQ3XiQ=="
+        }
+      ],
+      "writeChallenges": [
+        {
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"bkYiM7DpEYmU6kqTnR8foRNb0bFxx9w/fZ+pRqxsbXE=\",\"hashSalt\":\"jQeDCW131nHeccb9rU99kNwH9gE2HjcjPdFHqRoCJ4i6DUPfFhblmZ03HDOKs69/ID3ZDnlIh5MbhHYInOhaZg==\"}",
+          "hash": "7/mtk1E0nxARmuT8Spubi0r5Uo/FiaaBeJlnm0Fhq9lCbuOLeqDcDUFGwb4CHk0a0ftoBzF+ah7jKNDWUmxbDA=="
+        },
+        {
+          "helper": "{\"type\":\"secret\",\"kdfSalt\":\"PXgwRzrhdPsDDmWrZcMPUGDI3CtrPxkyF68S4Xza/u8=\",\"hashSalt\":\"VRSg+jc3J/tCvbDDs2+274UfqeWbaH0aidIP51ndDkSoTmuNRDBm1lD2HtYTTB6GeWie9r8pXfcVTrTRs5hD/w==\"}",
+          "hash": "JEdX5JHN3WJofs7OsSLk9nEqySlL4/AzBGxQ7XfHVc25E4akwcz1HaohjblumBsLR+9FQaxJA2RayzcyPQ3XiQ=="
         }
       ]
     }
@@ -29,7 +46,7 @@
   "users": [
     {
       "email": "a",
-      "initialDocId": "04eb3663-5a05-4c86-bf9c-e38436dc8876"
+      "initialDocId": "f5d686db-034f-4143-b4a7-2c9da02b3280"
     }
   ]
 }
