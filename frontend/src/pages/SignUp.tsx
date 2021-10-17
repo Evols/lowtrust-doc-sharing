@@ -54,7 +54,6 @@ export default function SignUp({}: IProps) {
             }}
             onClick={async () => {
               if (await registerWithPassword(email, password)) {
-                console.log('registerWithPassword redirect');
                 history.push('/signup/completed');
               }
             }}
