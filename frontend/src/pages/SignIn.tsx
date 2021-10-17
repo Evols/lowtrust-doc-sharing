@@ -1,6 +1,6 @@
 
 import { Flex, Box, Heading, FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { KeyStore } from '../state/KeyStore';
 
@@ -11,8 +11,17 @@ export default function SignIn({}: IProps) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { loginWithPassword } = KeyStore.useContainer();
+  const { loginWithPassword, isLoggedIn } = KeyStore.useContainer();
   const history = useHistory();
+
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
+  console.log('SignIn isLoggedIn:', isLoggedIn, 'justLoggedIn:', justLoggedIn);
+
+  useEffect(() => {
+    if (isLoggedIn && !justLoggedIn) {
+      history.replace('/documents');
+    }
+  }, [isLoggedIn]);
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
     <Flex w="100vw" mt={16} mb={16} flexDir="row" justifyContent="space-around">
@@ -52,6 +61,7 @@ export default function SignIn({}: IProps) {
             }}
             onClick={async () => {
               if (await loginWithPassword(email, password)) {
+                setJustLoggedIn(true);
                 history.push('/documents');
               }
             }}
