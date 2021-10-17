@@ -24,7 +24,7 @@ module.exports = {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
-    ]
+    ],
   },
   devServer: {
     historyApiFallback: true,
@@ -33,6 +33,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'index.html',
+      publicPath: '/',
     }),
     new FaviconsWebpackPlugin('./favicon.png'),
     new MiniCssExtractPlugin(),

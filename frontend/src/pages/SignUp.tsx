@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input } from '@chakra-ui/react';
 import { KeyStore } from '../state/KeyStore';
+import { useHistory } from 'react-router';
 
 export interface IProps {
 }
@@ -11,6 +12,7 @@ export default function SignUp({}: IProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { registerWithPassword } = KeyStore.useContainer();
+  const history = useHistory();
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
     <Flex w="100vw" mt={16} mb={16} flexDir="row" justifyContent="space-around">
@@ -51,7 +53,7 @@ export default function SignUp({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              await registerWithPassword(email, password);
+              await registerWithPassword(email, password, history);
             }}
           >
             Submit

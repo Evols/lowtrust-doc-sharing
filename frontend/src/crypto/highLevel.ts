@@ -57,6 +57,8 @@ export async function registerWithPassword(url: string, email: string, password:
     masterSecretKey,
     masterBoxKeyPair,
     masterSignKeyPair,
+    directoryDocId,
+    failsafeSecretKey,
   };
 }
 

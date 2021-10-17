@@ -7,6 +7,8 @@ import { ChakraProvider } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
 import { KeyStore } from './state/KeyStore';
 import SignIn from './pages/Signin';
+import SignUpCompleted from './pages/SignUpCompleted';
+import NotFound from './pages/NotFound';
 
 export function App() {
   return (
@@ -19,16 +21,24 @@ export function App() {
 
             <Switch>
 
-              <Route path="/signup">
+              <Route path="/signup/completed" exact>
+                <SignUpCompleted />
+              </Route>
+
+              <Route path="/signup" exact>
                 <SignUp />
               </Route>
 
-              <Route path="/signin">
+              <Route path="/signin" exact>
                 <SignIn />
               </Route>
 
               <Route path="/" exact>
                 <Redirect to="/signin" />
+              </Route>
+
+              <Route path="/">
+                <NotFound />
               </Route>
 
             </Switch>

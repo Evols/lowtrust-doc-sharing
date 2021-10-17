@@ -1,6 +1,7 @@
 
 import { Flex, Box, Heading, FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { KeyStore } from '../state/KeyStore';
 
 export interface IProps {
@@ -11,6 +12,7 @@ export default function SignIn({}: IProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { loginWithPassword } = KeyStore.useContainer();
+  const history = useHistory();
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
     <Flex w="100vw" mt={16} mb={16} flexDir="row" justifyContent="space-around">
@@ -49,7 +51,7 @@ export default function SignIn({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              await loginWithPassword(email, password);
+              await loginWithPassword(email, password, history);
             }}
           >
             Submit
