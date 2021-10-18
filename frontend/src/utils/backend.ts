@@ -18,6 +18,7 @@ export async function postDocument(url: string, doc: Omit<IDocument, 'id'>): Pro
 }
 
 export async function getDocument(url: string, id: string, challengeSolutions: string[]): Promise<IDocument> {
+  // TODO: handle errors
   const res = await axios.get(
     `${url}/document/${id}`,
     {

@@ -19,7 +19,7 @@ export async function registerWithPassword(url: string, email: string, password:
   const masterBoxKeyPair = box.keyPair();
   const masterSignKeyPair = sign.keyPair();
 
-  const directoryDocId = await createDocumentWithMasterSecretKey(url, masterSecretKey, decodeUTF8(JSON.stringify([])));
+  const directoryDocId = await createDirectoryWithSecretKey(url, masterSecretKey, []);
 
   const failsafeSecretKey = randomBytes(secretbox.keyLength);
   const passwordSalt = randomBytes(secretbox.keyLength);
@@ -117,7 +117,12 @@ export async function loginWithPassword(url: string, email: string, password: st
   };
 }
 
-export async function createDocumentWithMasterSecretKey(url: string, masterSecretKey: Uint8Array, docContent: Uint8Array) {
+export async function createDirectoryWithSecretKey(url: string, masterSecretKey: Uint8Array, docIds: string[]) {
+  return await createDocumentWithSecretKey(url, masterSecretKey, JSON.stringify(docIds));
+}
+
+// TODO: update terminology. A stored document isn't a "logical" document
+export async function createDocumentWithSecretKey(url: string, masterSecretKey: Uint8Array, doc: string) {
   
   const challenges: IChallenge[] = [
     await buildSecretBasedChallenge(masterSecretKey),
@@ -130,7 +135,7 @@ export async function createDocumentWithMasterSecretKey(url: string, masterSecre
     {
       cypher: JSON.stringify({
         nonce: encodeBase64(nonce),
-        box: encodeBase64(secretbox(docContent, nonce, masterSecretKey)),
+        box: encodeBase64(secretbox(decodeUTF8(doc), nonce, masterSecretKey)),
       }),
       hash: '',
       readChallenges: challenges,
@@ -139,4 +144,34 @@ export async function createDocumentWithMasterSecretKey(url: string, masterSecre
   );
 
   return directoryDocId;
+}
+
+export async function getDocumentWithSecretKey(url: string, docId: string, masterSecretKey: Uint8Array): Promise<string | undefined> {
+  const challenges = (await getDocumentChallenges(url, docId)).readChallenges.filter(
+    challenge => JSON.parse(challenge.helper).type === 'secret'
+  );
+  const challengeSolutions = (await Promise.all(challenges.map(
+    async (challenge) => {
+      const solution = await buildSecretBasedSolution(masterSecretKey, challenge.helper);
+      if (solution === undefined) {
+        return [];
+      } else {
+        return [solution];
+      }
+    }
+  ))).flat();
+
+  const directoryDocRaw = await getDocument(url, docId, challengeSolutions);
+  const directoryDocRawParsed = z.object({
+    nonce: z.string(),
+    box: z.string(),
+  }).parse(JSON.stringify(directoryDocRaw.cypher));
+
+  const directoryDocBuffer = secretbox.open(decodeBase64(directoryDocRawParsed.box), decodeBase64(directoryDocRawParsed.nonce), masterSecretKey);
+  if (directoryDocBuffer === null) {
+    return undefined;
+  }
+
+  const directoryDocString = encodeUTF8(directoryDocBuffer);
+  return directoryDocString;
 }

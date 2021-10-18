@@ -12,6 +12,7 @@ function useKeyStore() {
   const [masterBoxKeyPair, _setMasterBoxKeyPair] = useState<BoxKeyPair | undefined>(undefined);
   const [masterSignKeyPair, _setMasterSignKeyPair] = useState<SignKeyPair | undefined>(undefined);
   const [directoryDocId, _setDirectoryDocId] = useState<string | undefined>(undefined);
+
   const [url, setUrl] = useState<string>('http://localhost:5000');
 
   const isLoggedIn = masterSecretKey !== undefined;
@@ -102,7 +103,9 @@ function useKeyStore() {
     registerWithPassword,
     loginWithPassword,
     signOut,
+    masterSecretKey,
     directoryDocId,
+    url,
     isLoggedIn,
   };
 }
