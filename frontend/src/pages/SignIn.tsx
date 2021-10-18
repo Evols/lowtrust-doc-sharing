@@ -15,7 +15,6 @@ export default function SignIn({}: IProps) {
   const history = useHistory();
 
   const [justLoggedIn, setJustLoggedIn] = useState(false);
-  console.log('SignIn isLoggedIn:', isLoggedIn, 'justLoggedIn:', justLoggedIn);
 
   useEffect(() => {
     if (isLoggedIn && !justLoggedIn) {
