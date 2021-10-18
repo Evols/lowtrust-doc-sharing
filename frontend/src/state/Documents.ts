@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { createContainer } from 'unstated-next';
 import { z } from 'zod';
-import { createDocumentWithSecretKey, getDocumentWithSecretKey } from '../crypto/highLevel';
+import { createRecordWithSecretKey, getRecordWithSecretKey } from '../crypto/highLevel';
 import { useAsyncEffect } from '../utils/hooks';
 import { KeyStore } from './KeyStore';
 
@@ -20,10 +20,10 @@ function useDocuments() {
 
   useAsyncEffect(async () => {
     if (isLoggedIn) {
-      const directoryDocString = await getDocumentWithSecretKey(url, directoryDocId!, masterSecretKey!);
+      const directoryDocString = await getRecordWithSecretKey(url, directoryDocId!, masterSecretKey!);
       const docIds = z.array(z.string()).parse(JSON.parse(directoryDocString ?? 'null'));
       const docs = await Promise.all(docIds.map(async docId => {
-        const docString = await getDocumentWithSecretKey(url, docId, masterSecretKey!);
+        const docString = await getRecordWithSecretKey(url, docId, masterSecretKey!);
         const doc = Document.parse(JSON.parse(docString ?? 'null'));  
         return doc;
       }));
@@ -32,9 +32,9 @@ function useDocuments() {
   }, [isLoggedIn]);
 
   async function postDocument(doc: IDocument) {
-    const docId = await createDocumentWithSecretKey(url, masterSecretKey!, JSON.stringify(doc));
+    const docId = await createRecordWithSecretKey(url, masterSecretKey!, JSON.stringify(doc));
     
-    const directoryDocString = await getDocumentWithSecretKey(url, directoryDocId!, masterSecretKey!);
+    const directoryDocString = await getRecordWithSecretKey(url, directoryDocId!, masterSecretKey!);
     const docIds = z.array(z.string()).parse(JSON.parse(directoryDocString ?? 'null'));
 
     // TODO: update directory

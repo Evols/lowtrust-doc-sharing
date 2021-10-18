@@ -1,23 +1,23 @@
 
-import { createDocument, createUser, getDocument, getUser } from './database';
+import { createRecord, createUser, getRecord, getUser } from './database';
 import express from 'express';
 import { IncomingHttpHeaders } from 'http';
 import { hash, verify } from 'tweetnacl';
 import { decodeBase64 } from 'tweetnacl-util';
 import { z } from 'zod';
-import { IDocument, Challenge } from 'ltds_common/dist/schemas';
+import { IRecord, Challenge } from 'ltds_common/dist/schemas';
 import cors from 'cors';
 import morgan from 'morgan';
 
 type IAuthCheckResult = {
   success: true,
-  doc: IDocument,
+  doc: IRecord,
 } | {
   success: false,
   errorCode: number,
 };
 
-function checkAuth(doc: IDocument, headers: IncomingHttpHeaders, challengeType: 'readChallenges' | 'writeChallenges'): IAuthCheckResult {
+function checkAuth(doc: IRecord, headers: IncomingHttpHeaders, challengeType: 'readChallenges' | 'writeChallenges'): IAuthCheckResult {
   const authorization = headers.authorization;
   const authPrefix = 'Challenges ';
   if (authorization === undefined || !authorization.startsWith(authPrefix)) {
@@ -30,7 +30,7 @@ function checkAuth(doc: IDocument, headers: IncomingHttpHeaders, challengeType: 
   const challengeStrs = authorization.substr(authPrefix.length, authorization.length).split(' ').filter((_, i) => i < doc[challengeType].length); // Limit the number of challenges
   const challengesHashes = challengeStrs.map(challenge => hash(decodeBase64(challenge)));
 
-  // Check this document has at least one valid challenge
+  // Check this record has at least one valid challenge
   if (doc[challengeType].filter(
     readChallenge => challengesHashes.filter(
       sentChallengeHash => verify(decodeBase64(readChallenge.hash), sentChallengeHash)
@@ -56,11 +56,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Get the challenges for a given document
-app.get('/document/challenges/:id', async function (req, res) {
+// Get the challenges for a given record
+app.get('/record/challenges/:id', async function (req, res) {
 
   const docId = req.params['id'];
-  const doc = await getDocument(docId);
+  const doc = await getRecord(docId);
 
   if (doc === undefined) {
     return res.status(404).end();
@@ -73,11 +73,11 @@ app.get('/document/challenges/:id', async function (req, res) {
 
 });
 
-// Get the given document
-app.get('/document/:id', async function (req, res) {
-  // Check auth and get document
+// Get the given record
+app.get('/record/:id', async function (req, res) {
+  // Check auth and get record
   const docId = req.params['id'];
-  const doc = await getDocument(docId);
+  const doc = await getRecord(docId);
 
   if (doc === undefined) {
     return res.status(404).end();
@@ -90,12 +90,12 @@ app.get('/document/:id', async function (req, res) {
     return res.status(result.errorCode).end();
   }
 
-  // Send the document
+  // Send the record
   return res.json(result.doc);
 });
 
-// Creates a document. An alternative way of implementing this might be using a "right to post" token, bought separately using crypto
-app.post('/document', async function (req, res) {
+// Creates a record. An alternative way of implementing this might be using a "right to post" token, bought separately using crypto
+app.post('/record', async function (req, res) {
 
   const body = z.object({
     cypher: z.string(),
@@ -104,14 +104,14 @@ app.post('/document', async function (req, res) {
     writeChallenges: z.array(Challenge),
   }).parse(req.body);
 
-  const docId = await createDocument(body);
+  const docId = await createRecord(body);
 
   return res.json({
     id: docId,
   });
 });
 
-// Gets an user, with a link to his initial document.
+// Gets an user, with a link to his initial record.
 app.get('/user', async function (req, res) {
 
   const query = z.object({
@@ -127,7 +127,7 @@ app.get('/user', async function (req, res) {
   return res.json(user);
 });
 
-// Creates an user, with a link to his initial document.
+// Creates an user, with a link to his initial record.
 app.post('/user', async function (req, res) {
 
   const body = z.object({

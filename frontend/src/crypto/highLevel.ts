@@ -2,7 +2,7 @@
 import { randomBytes, secretbox, box, sign } from 'tweetnacl';
 import { decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } from 'tweetnacl-util';
 import { IChallenge } from 'ltds_common/dist/schemas';
-import { getDocument, getDocumentChallenges, getUser, postDocument, postUser } from '../utils/backend';
+import { getRecord, getRecordChallenges, getUser, postRecord, postUser } from '../utils/backend';
 import { buildSecretBasedChallenge, buildSecretBasedSolution } from './challenges';
 import { passwordToSecretKey, genKeyVault, IKeyVault, KeyVault, KeyVaultContent } from './vault';
 import { z } from 'zod';
@@ -34,8 +34,8 @@ export async function registerWithPassword(url: string, email: string, password:
     await buildSecretBasedChallenge(decodeUTF8(password)),
   ];
 
-  // The idea is that these documents can be viewed by anyone, but edited by the owner only
-  const vaultsDocId = await postDocument(
+  // The idea is that these records can be viewed and edited by the owner only
+  const vaultsDocId = await postRecord(
     url,
     {
       cypher: JSON.stringify({ vaults }),
@@ -70,7 +70,7 @@ export async function loginWithPassword(url: string, email: string, password: st
     return false;
   }
 
-  const challenges = (await getDocumentChallenges(url, existingUser.initialDocId)).readChallenges.filter(
+  const challenges = (await getRecordChallenges(url, existingUser.initialDocId)).readChallenges.filter(
     challenge => JSON.parse(challenge.helper).type === 'secret'
   );
   const challengeSolutions = (await Promise.all(challenges.map(
@@ -84,7 +84,7 @@ export async function loginWithPassword(url: string, email: string, password: st
     }
   ))).flat();
 
-  const doc = await getDocument(url, existingUser.initialDocId, challengeSolutions);
+  const doc = await getRecord(url, existingUser.initialDocId, challengeSolutions);
 
   const vaults = z.object({
     vaults: z.array(KeyVault),
@@ -118,11 +118,11 @@ export async function loginWithPassword(url: string, email: string, password: st
 }
 
 export async function createDirectoryWithSecretKey(url: string, masterSecretKey: Uint8Array, docIds: string[]) {
-  return await createDocumentWithSecretKey(url, masterSecretKey, JSON.stringify(docIds));
+  return await createRecordWithSecretKey(url, masterSecretKey, JSON.stringify(docIds));
 }
 
 // TODO: update terminology. A stored document isn't a "logical" document
-export async function createDocumentWithSecretKey(url: string, masterSecretKey: Uint8Array, doc: string) {
+export async function createRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, doc: string) {
   
   const challenges: IChallenge[] = [
     await buildSecretBasedChallenge(masterSecretKey),
@@ -130,7 +130,7 @@ export async function createDocumentWithSecretKey(url: string, masterSecretKey: 
 
   const nonce = randomBytes(secretbox.nonceLength);
 
-  const directoryDocId = await postDocument(
+  const directoryDocId = await postRecord(
     url,
     {
       cypher: JSON.stringify({
@@ -146,8 +146,8 @@ export async function createDocumentWithSecretKey(url: string, masterSecretKey: 
   return directoryDocId;
 }
 
-export async function getDocumentWithSecretKey(url: string, docId: string, masterSecretKey: Uint8Array): Promise<string | undefined> {
-  const challenges = (await getDocumentChallenges(url, docId)).readChallenges.filter(
+export async function getRecordWithSecretKey(url: string, docId: string, masterSecretKey: Uint8Array): Promise<string | undefined> {
+  const challenges = (await getRecordChallenges(url, docId)).readChallenges.filter(
     challenge => JSON.parse(challenge.helper).type === 'secret'
   );
   const challengeSolutions = (await Promise.all(challenges.map(
@@ -161,7 +161,7 @@ export async function getDocumentWithSecretKey(url: string, docId: string, maste
     }
   ))).flat();
 
-  const directoryDocRaw = await getDocument(url, docId, challengeSolutions);
+  const directoryDocRaw = await getRecord(url, docId, challengeSolutions);
   const directoryDocRawParsed = z.object({
     nonce: z.string(),
     box: z.string(),

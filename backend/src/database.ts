@@ -1,11 +1,11 @@
 
 import { randomUUID } from 'crypto';
 import { readFile, writeFile } from 'fs/promises';
-import { Document, IDocument, IUser, User } from 'ltds_common/dist/schemas';
+import { Record, IRecord, IUser, User } from 'ltds_common/dist/schemas';
 import { z } from 'zod';
 
 const DbData = z.object({
-  documents: z.array(Document),
+  records: z.array(Record),
   users: z.array(User),
 });
 type IDbData = z.infer<typeof DbData>;
@@ -14,7 +14,7 @@ const dbPath = './db.json';
 
 const db = {
   data: {
-    documents: [],
+    records: [],
     users: [],
   } as IDbData,
   read: async function() {
@@ -25,31 +25,31 @@ const db = {
   },
 };
 
-export async function getDocument(id: string): Promise<IDocument | undefined> {
+export async function getRecord(id: string): Promise<IRecord | undefined> {
   await db.read();
-  return db.data.documents.find(
+  return db.data.records.find(
     doc => doc.id === id
   );
 }
 
-export async function createDocument(doc: Omit<IDocument, 'id'>): Promise<string> {
+export async function createRecord(doc: Omit<IRecord, 'id'>): Promise<string> {
   await db.read();
   const docWithId = {
     ...doc,
     id: randomUUID(),
   };
-  db.data.documents.push(docWithId);
+  db.data.records.push(docWithId);
   await db.write();
   return docWithId.id;
 }
 
-export async function updateDocument(doc: IDocument): Promise<void> {
+export async function updateRecord(doc: IRecord): Promise<void> {
   await db.read();
-  const foundIdx = db.data.documents.findIndex(
+  const foundIdx = db.data.records.findIndex(
     dbDoc => dbDoc.id === doc.id
   );
   if (foundIdx !== -1 && foundIdx !== undefined) {
-    db.data.documents[foundIdx] = doc;
+    db.data.records[foundIdx] = doc;
     await db.write();
   }
 }

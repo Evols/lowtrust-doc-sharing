@@ -1,13 +1,13 @@
 
 import axios from 'axios';
-import { Challenge, Document, IChallenge, IDocument, IUser, User } from 'ltds_common/dist/schemas';
+import { Challenge, IChallenge, Record, IRecord, IUser, User } from 'ltds_common/dist/schemas';
 import { z } from 'zod';
 
-// Returns the id of the document
-export async function postDocument(url: string, doc: Omit<IDocument, 'id'>): Promise<string> {
+// Returns the id of the record
+export async function postRecord(url: string, record: Omit<IRecord, 'id'>): Promise<string> {
   const res = await axios.post(
-    `${url}/document`,
-    doc,
+    `${url}/record`,
+    record,
   );
   
   const resData = z.object({
@@ -17,32 +17,32 @@ export async function postDocument(url: string, doc: Omit<IDocument, 'id'>): Pro
   return resData.id;
 }
 
-export async function getDocument(url: string, id: string, challengeSolutions: string[]): Promise<IDocument> {
+export async function getRecord(url: string, id: string, challengeSolutions: string[]): Promise<IRecord> {
   // TODO: handle errors
   const res = await axios.get(
-    `${url}/document/${id}`,
+    `${url}/record/${id}`,
     {
       headers: {
         Authorization: `Challenges ${challengeSolutions.join(' ')}`,
       },
     },
   );
-  const doc = Document.parse(res.data);
-  return doc;
+  const record = Record.parse(res.data);
+  return record;
 }
 
-export async function getDocumentChallenges(url: string, id: string): Promise<{ readChallenges: IChallenge[], writeChallenges: IChallenge[] }> {
-  const res = await axios.get(`${url}/document/challenges/${id}`);
+export async function getRecordChallenges(url: string, id: string): Promise<{ readChallenges: IChallenge[], writeChallenges: IChallenge[] }> {
+  const res = await axios.get(`${url}/record/challenges/${id}`);
   return z.object({
     readChallenges: z.array(Challenge),
     writeChallenges: z.array(Challenge),
   }).parse(res.data);
 }
 
-export async function postUser(url: string, doc: Omit<IUser, 'id'>): Promise<void> {
+export async function postUser(url: string, user: Omit<IUser, 'id'>): Promise<void> {
   await axios.post(
     `${url}/user`,
-    doc,
+    user,
   );
 }
 
