@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { BoxKeyPair, SignKeyPair, box, sign } from 'tweetnacl';
 import { decodeBase64, encodeBase64 } from 'tweetnacl-util';
 import { createContainer } from 'unstated-next';
-import { registerWithPassword as cryptoRegisterWithPassword, loginWithPassword as cryptoLoginWithPassword } from '../crypto/highLevel';
+import { registerWithPassword as cryptoRegisterWithPassword, loginWithPassword as cryptoLoginWithPassword } from '../crypto/authentication';
 import { downloadFile } from '../utils/downloader';
 
 function useKeyStore() {

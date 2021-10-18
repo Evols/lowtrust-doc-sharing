@@ -1,7 +1,7 @@
 
 import { randomUUID } from 'crypto';
 import { readFile, writeFile } from 'fs/promises';
-import { Record, IRecord, IUser, User } from 'ltds_common/dist/schemas';
+import { Record, IRecord, IUser, User, IRecordContent, IRecordChallenges } from 'ltds_common/dist/schemas';
 import { z } from 'zod';
 
 const DbData = z.object({
@@ -25,14 +25,7 @@ const db = {
   },
 };
 
-export async function getRecord(id: string): Promise<IRecord | undefined> {
-  await db.read();
-  return db.data.records.find(
-    doc => doc.id === id
-  );
-}
-
-export async function createRecord(doc: Omit<IRecord, 'id'>): Promise<string> {
+export async function createRecord(doc: IRecordContent & IRecordChallenges): Promise<string> {
   await db.read();
   const docWithId = {
     ...doc,
@@ -43,13 +36,21 @@ export async function createRecord(doc: Omit<IRecord, 'id'>): Promise<string> {
   return docWithId.id;
 }
 
-export async function updateRecord(doc: IRecord): Promise<void> {
+export async function readRecord(id: string): Promise<IRecord | undefined> {
+  await db.read();
+  return db.data.records.find(
+    doc => doc.id === id
+  );
+}
+
+export async function updateRecord(id: string, doc: IRecordContent): Promise<void> {
   await db.read();
   const foundIdx = db.data.records.findIndex(
-    dbDoc => dbDoc.id === doc.id
+    dbDoc => dbDoc.id === id
   );
   if (foundIdx !== -1 && foundIdx !== undefined) {
-    db.data.records[foundIdx] = doc;
+    db.data.records[foundIdx].content = doc.content;
+    db.data.records[foundIdx].hash = doc.hash;
     await db.write();
   }
 }

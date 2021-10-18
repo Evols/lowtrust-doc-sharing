@@ -10,14 +10,24 @@ export const Challenge = z.object({
 });
 export type IChallenge = z.infer<typeof Challenge>;
 
-// Represents a record
-export const Record = z.object({
-  id: z.string(), // uuid
-  cypher: z.string(), // Cypher of the data
+// Represents a record without an id and without challenges
+export const RecordContent = z.object({
+  content: z.string(), // Data container
   hash: z.string(), // Hash of the cypher
+});
+export type IRecordContent = z.infer<typeof RecordContent>;
+
+// Represents a record's challenges
+export const RecordChallenges = z.object({
   readChallenges: z.array(Challenge), // Challenge to complete by the client to read the record
   writeChallenges: z.array(Challenge), // Challenge to complete by the client to edit the record
 });
+export type IRecordChallenges = z.infer<typeof RecordChallenges>;
+
+// Represents a record
+export const Record = z.object({
+  id: z.string(), // uuid
+}).and(RecordContent).and(RecordChallenges);
 export type IRecord = z.infer<typeof Record>;
 
 // Represents an user. Basically a pointer to a record (you can actually use a different IAM service, the only thing you need it a link to the auth record)

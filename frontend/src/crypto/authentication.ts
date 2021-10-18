@@ -1,11 +1,12 @@
 
 import { randomBytes, secretbox, box, sign } from 'tweetnacl';
-import { decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } from 'tweetnacl-util';
 import { IChallenge } from 'ltds_common/dist/schemas';
-import { getRecord, getRecordChallenges, getUser, postRecord, postUser } from '../utils/backend';
-import { buildSecretBasedChallenge, buildSecretBasedSolution } from './challenges';
-import { passwordToSecretKey, genKeyVault, IKeyVault, KeyVault, KeyVaultContent } from './vault';
+import { encodeBase64, decodeUTF8, decodeBase64, encodeUTF8 } from 'tweetnacl-util';
 import { z } from 'zod';
+import { getUser, postRecord, postUser, getRecordChallenges, getRecord } from '../utils/backend';
+import { buildSecretBasedChallenge, buildSecretBasedSolution } from './challenges';
+import { createDirectory } from './documents';
+import { passwordToSecretKey, genKeyVault, IKeyVault, KeyVault, KeyVaultContent } from './vault';
 
 // Returns the master keys
 export async function registerWithPassword(url: string, email: string, password: string) {
@@ -19,7 +20,7 @@ export async function registerWithPassword(url: string, email: string, password:
   const masterBoxKeyPair = box.keyPair();
   const masterSignKeyPair = sign.keyPair();
 
-  const directoryDocId = await createDirectoryWithSecretKey(url, masterSecretKey, []);
+  const directoryDocId = await createDirectory(url, masterSecretKey, []);
 
   const failsafeSecretKey = randomBytes(secretbox.keyLength);
   const passwordSalt = randomBytes(secretbox.keyLength);
@@ -38,7 +39,7 @@ export async function registerWithPassword(url: string, email: string, password:
   const vaultsDocId = await postRecord(
     url,
     {
-      cypher: JSON.stringify({ vaults }),
+      content: JSON.stringify({ vaults }),
       hash: '', // N/A
       readChallenges: vaultsChallenges,
       writeChallenges: vaultsChallenges,
@@ -88,7 +89,7 @@ export async function loginWithPassword(url: string, email: string, password: st
 
   const vaults = z.object({
     vaults: z.array(KeyVault),
-  }).parse(JSON.parse(doc.cypher)).vaults;
+  }).parse(JSON.parse(doc.content)).vaults;
   const usingPasswordVault = vaults.find(vault => vault.metadata.type === 'password');
 
   if (usingPasswordVault === undefined || usingPasswordVault.metadata.type !== 'password') {
@@ -115,63 +116,4 @@ export async function loginWithPassword(url: string, email: string, password: st
     masterSignKeyPair: sign.keyPair.fromSecretKey(decodeBase64(decipheredVault.masterSignKey)),
     directoryDocId: decipheredVault.directoryId,
   };
-}
-
-export async function createDirectoryWithSecretKey(url: string, masterSecretKey: Uint8Array, docIds: string[]) {
-  return await createRecordWithSecretKey(url, masterSecretKey, JSON.stringify(docIds));
-}
-
-// TODO: update terminology. A stored document isn't a "logical" document
-export async function createRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, doc: string) {
-  
-  const challenges: IChallenge[] = [
-    await buildSecretBasedChallenge(masterSecretKey),
-  ];
-
-  const nonce = randomBytes(secretbox.nonceLength);
-
-  const directoryDocId = await postRecord(
-    url,
-    {
-      cypher: JSON.stringify({
-        nonce: encodeBase64(nonce),
-        box: encodeBase64(secretbox(decodeUTF8(doc), nonce, masterSecretKey)),
-      }),
-      hash: '',
-      readChallenges: challenges,
-      writeChallenges: challenges,
-    },
-  );
-
-  return directoryDocId;
-}
-
-export async function getRecordWithSecretKey(url: string, docId: string, masterSecretKey: Uint8Array): Promise<string | undefined> {
-  const challenges = (await getRecordChallenges(url, docId)).readChallenges.filter(
-    challenge => JSON.parse(challenge.helper).type === 'secret'
-  );
-  const challengeSolutions = (await Promise.all(challenges.map(
-    async (challenge) => {
-      const solution = await buildSecretBasedSolution(masterSecretKey, challenge.helper);
-      if (solution === undefined) {
-        return [];
-      } else {
-        return [solution];
-      }
-    }
-  ))).flat();
-
-  const directoryDocRaw = await getRecord(url, docId, challengeSolutions);
-  const directoryDocRawParsed = z.object({
-    nonce: z.string(),
-    box: z.string(),
-  }).parse(JSON.stringify(directoryDocRaw.cypher));
-
-  const directoryDocBuffer = secretbox.open(decodeBase64(directoryDocRawParsed.box), decodeBase64(directoryDocRawParsed.nonce), masterSecretKey);
-  if (directoryDocBuffer === null) {
-    return undefined;
-  }
-
-  const directoryDocString = encodeUTF8(directoryDocBuffer);
-  return directoryDocString;
 }

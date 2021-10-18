@@ -1,11 +1,11 @@
 
-import { createRecord, createUser, getRecord, getUser } from './database';
+import { createRecord, createUser, readRecord, getUser, updateRecord } from './database';
 import express from 'express';
 import { IncomingHttpHeaders } from 'http';
 import { hash, verify } from 'tweetnacl';
 import { decodeBase64 } from 'tweetnacl-util';
 import { z } from 'zod';
-import { IRecord, Challenge } from 'ltds_common/dist/schemas';
+import { IRecord, Challenge, Record, RecordContent } from 'ltds_common/dist/schemas';
 import cors from 'cors';
 import morgan from 'morgan';
 
@@ -60,16 +60,16 @@ app.use(morgan('dev'));
 app.get('/record/challenges/:id', async function (req, res) {
 
   const docId = req.params['id'];
-  const doc = await getRecord(docId);
+  const doc = await readRecord(docId);
 
   if (doc === undefined) {
     return res.status(404).end();
   }
 
-  res.json({
+  return res.json({
     readChallenges: doc.readChallenges,
     writeChallenges: doc.writeChallenges,
-  });
+  }).end();
 
 });
 
@@ -77,7 +77,7 @@ app.get('/record/challenges/:id', async function (req, res) {
 app.get('/record/:id', async function (req, res) {
   // Check auth and get record
   const docId = req.params['id'];
-  const doc = await getRecord(docId);
+  const doc = await readRecord(docId);
 
   if (doc === undefined) {
     return res.status(404).end();
@@ -94,21 +94,42 @@ app.get('/record/:id', async function (req, res) {
   return res.json(result.doc);
 });
 
+// Updates a record. Updates only the record content, not the challenges
+app.put('/record/:id', async function (req, res) {
+  // Check auth and get record
+  const docId = req.params['id'];
+  const doc = await readRecord(docId);
+
+  if (doc === undefined) {
+    return res.status(404).end();
+  }
+
+  const result = checkAuth(doc, req.headers, 'writeChallenges');
+
+  // If there was an error, handle it
+  if (!result.success) {
+    return res.status(result.errorCode).end();
+  }
+
+  const recordContent = RecordContent.parse(req.body);
+
+  await updateRecord(docId, recordContent);
+
+  return res.status(204).end();
+});
+
+// TODO: PUT /record/challenges/:id
+
 // Creates a record. An alternative way of implementing this might be using a "right to post" token, bought separately using crypto
 app.post('/record', async function (req, res) {
 
-  const body = z.object({
-    cypher: z.string(),
-    hash: z.string(),
-    readChallenges: z.array(Challenge),
-    writeChallenges: z.array(Challenge),
-  }).parse(req.body);
+  const body = Record.parse(req.body);
 
   const docId = await createRecord(body);
 
   return res.json({
     id: docId,
-  });
+  }).end();
 });
 
 // Gets an user, with a link to his initial record.
@@ -124,7 +145,7 @@ app.get('/user', async function (req, res) {
     return res.status(404).end();
   }
 
-  return res.json(user);
+  return res.json(user).end();
 });
 
 // Creates an user, with a link to his initial record.
@@ -144,7 +165,7 @@ app.post('/user', async function (req, res) {
 
   return res.json({
     userId,
-  });
+  }).end();
 });
 
 app.listen(5000);

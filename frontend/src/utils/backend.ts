@@ -1,21 +1,7 @@
 
 import axios from 'axios';
-import { Challenge, IChallenge, Record, IRecord, IUser, User } from 'ltds_common/dist/schemas';
+import { Challenge, IChallenge, Record, IRecord, IUser, User, IRecordContent, IRecordChallenges } from 'ltds_common/dist/schemas';
 import { z } from 'zod';
-
-// Returns the id of the record
-export async function postRecord(url: string, record: Omit<IRecord, 'id'>): Promise<string> {
-  const res = await axios.post(
-    `${url}/record`,
-    record,
-  );
-  
-  const resData = z.object({
-    id: z.string(),
-  }).parse(res.data);
-
-  return resData.id;
-}
 
 export async function getRecord(url: string, id: string, challengeSolutions: string[]): Promise<IRecord> {
   // TODO: handle errors
@@ -39,10 +25,29 @@ export async function getRecordChallenges(url: string, id: string): Promise<{ re
   }).parse(res.data);
 }
 
-export async function postUser(url: string, user: Omit<IUser, 'id'>): Promise<void> {
-  await axios.post(
-    `${url}/user`,
-    user,
+// Returns the id of the record
+export async function postRecord(url: string, record: IRecordContent & IRecordChallenges): Promise<string> {
+  const res = await axios.post(
+    `${url}/record`,
+    record,
+  );
+
+  const resData = z.object({
+    id: z.string(),
+  }).parse(res.data);
+
+  return resData.id;
+}
+
+export async function putRecord(url: string, id: string, record: IRecordContent, challengeSolutions: string[]): Promise<void> {
+  await axios.put(
+    `${url}/record/${id}`,
+    record,
+    {
+      headers: {
+        Authorization: `Challenges ${challengeSolutions.join(' ')}`,
+      },
+    },
   );
 }
 
@@ -58,4 +63,11 @@ export async function getUser(url: string, email: string): Promise<IUser | undef
   }
 
   return User.parse(res.data);
+}
+
+export async function postUser(url: string, user: Omit<IUser, 'id'>): Promise<void> {
+  await axios.post(
+    `${url}/user`,
+    user,
+  );
 }
