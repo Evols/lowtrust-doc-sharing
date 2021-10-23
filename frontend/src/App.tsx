@@ -10,6 +10,7 @@ import SignIn from './pages/Signin';
 import SignUpCompleted from './pages/SignUpCompleted';
 import NotFound from './pages/NotFound';
 import Documents from './pages/Documents';
+import ResetPassword from './pages/ResetPassword';
 
 export function App() {
   return (
@@ -36,6 +37,10 @@ export function App() {
 
               <Route path="/signin" exact>
                 <SignIn />
+              </Route>
+
+              <Route path="/resetpassword" exact>
+                <ResetPassword />
               </Route>
 
               <Route path="/" exact>

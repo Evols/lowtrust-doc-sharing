@@ -39,7 +39,7 @@ export async function postRecord(url: string, record: IRecordContent & IRecordCh
   return resData.id;
 }
 
-export async function putRecord(url: string, id: string, record: IRecordContent, challengeSolutions: string[]): Promise<void> {
+export async function putRecord(url: string, id: string, record: IRecordContent & IRecordChallenges, challengeSolutions: string[]): Promise<void> {
   await axios.put(
     `${url}/record/${id}`,
     record,

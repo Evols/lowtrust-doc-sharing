@@ -43,7 +43,7 @@ export async function readRecord(id: string): Promise<IRecord | undefined> {
   );
 }
 
-export async function updateRecord(id: string, doc: IRecordContent): Promise<void> {
+export async function updateRecord(id: string, doc: IRecordContent & IRecordChallenges): Promise<void> {
   await db.read();
   const foundIdx = db.data.records.findIndex(
     dbDoc => dbDoc.id === id
@@ -51,6 +51,8 @@ export async function updateRecord(id: string, doc: IRecordContent): Promise<voi
   if (foundIdx !== -1 && foundIdx !== undefined) {
     db.data.records[foundIdx].content = doc.content;
     db.data.records[foundIdx].hash = doc.hash;
+    db.data.records[foundIdx].writeChallenges = doc.writeChallenges;
+    db.data.records[foundIdx].readChallenges = doc.readChallenges;
     await db.write();
   }
 }

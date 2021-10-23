@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { hash, verify } from 'tweetnacl';
 import { decodeBase64 } from 'tweetnacl-util';
 import { z } from 'zod';
-import { IRecord, Challenge, Record, RecordContent } from 'ltds_common/dist/schemas';
+import { IRecord, Challenge, Record, RecordContent, RecordChallenges } from 'ltds_common/dist/schemas';
 import cors from 'cors';
 import morgan from 'morgan';
 
@@ -111,7 +111,7 @@ app.put('/record/:id', async function (req, res) {
     return res.status(result.errorCode).end();
   }
 
-  const recordContent = RecordContent.parse(req.body);
+  const recordContent = RecordContent.and(RecordChallenges).parse(req.body);
 
   await updateRecord(docId, recordContent);
 
@@ -123,7 +123,7 @@ app.put('/record/:id', async function (req, res) {
 // Creates a record. An alternative way of implementing this might be using a "right to post" token, bought separately using crypto
 app.post('/record', async function (req, res) {
 
-  const body = Record.parse(req.body);
+  const body = RecordContent.and(RecordChallenges).parse(req.body);
 
   const docId = await createRecord(body);
 

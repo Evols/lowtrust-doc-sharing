@@ -1,18 +1,19 @@
 
 import { Flex, Box, Heading, FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { KeyStore } from '../state/KeyStore';
+import { readFile } from '../utils/files';
 
 export interface IProps {
 }
 
-export default function SignIn({}: IProps) {
+export default function ResetPassword({}: IProps) {
 
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { loginWithPassword, isLoggedIn } = KeyStore.useContainer();
+  const [newPassword, setPassword] = useState('');
+  const [failsafeSecretKey, setfailsafeSecretKey] = useState<string | undefined>(undefined);
+  const { resetPassword, isLoggedIn } = KeyStore.useContainer();
   const history = useHistory();
 
   const [justLoggedIn, setJustLoggedIn] = useState(false);
@@ -24,12 +25,12 @@ export default function SignIn({}: IProps) {
   }, [isLoggedIn]);
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
-    <Flex w="100vw" mt="calc(32vh - 200px)" flexDir="row" justifyContent="space-around">
+    <Flex w="100vw" mt={16} mb={16} flexDir="row" justifyContent="space-around">
       <Box borderWidth={1} rounded="3xl" p={4} w={460}>
 
-        <Heading size="md" fontWeight={500} mb={4}>Sign in</Heading>
+        <Heading size="md" fontWeight={500} mb={4}>Reset password</Heading>
 
-        <FormControl mb={2}>
+        <FormControl mb={3}>
           <FormLabel>Email</FormLabel>
           <Input
             type="text"
@@ -40,12 +41,27 @@ export default function SignIn({}: IProps) {
           />
         </FormControl>
 
-        <FormControl mb={4}>
-          <FormLabel>Password</FormLabel>
+        <FormControl mb={2}>
+          <FormLabel>Failsafe key</FormLabel>
+          <input
+            type="file"
+            onChange={async e => {
+              const file = e.target.files!.item(0) ?? undefined;
+              if (file !== undefined) {
+                setfailsafeSecretKey(await readFile(file!));
+              } else {
+                setfailsafeSecretKey(undefined);
+              }
+            }}
+          />
+        </FormControl>
+
+        <FormControl mb={3}>
+          <FormLabel>New password</FormLabel>
           <Input
             type="password"
             size="sm"
-            value={password}
+            value={newPassword}
             onChange={e => setPassword(e.target.value)}
           />
         </FormControl>
@@ -60,27 +76,18 @@ export default function SignIn({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              if (await loginWithPassword(email, password)) {
+              if (await resetPassword(email, newPassword, failsafeSecretKey!)) {
                 setJustLoggedIn(true);
                 history.push('/documents');
               }
             }}
+            disabled={failsafeSecretKey === undefined || email === '' || newPassword === '' }
           >
             Submit
           </Button>
         </Flex>
 
       </Box>
-
     </Flex>
-    
-    <Flex w="100vw" mt={2} mb={16} flexDir="row" justifyContent="space-around">
-
-      <Flex flexDir="row" justifyContent="space-around" w="100%" mt={2}>
-        <Link style={{ color: 'gray' }} to="/resetpassword">I forgot my password</Link>
-      </Flex>
-
-    </Flex>
-
   </Flex>;
 }

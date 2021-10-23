@@ -60,11 +60,11 @@ export async function createRecordWithSecretKey(url: string, masterSecretKey: Ui
 }
 
 export async function updateRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, id: string, content: string, hash: string) {
-
-  const challenges = (await getRecordChallenges(url, id)).writeChallenges.filter(
+  const challenges = await getRecordChallenges(url, id)
+  const writeSecretChallenges = challenges.writeChallenges.filter(
     challenge => JSON.parse(challenge.helper).type === 'secret'
   );
-  const challengeSolutions = (await Promise.all(challenges.map(
+  const challengeSolutions = (await Promise.all(writeSecretChallenges.map(
     async (challenge) => {
       const solution = await buildSecretBasedSolution(masterSecretKey, challenge.helper);
       if (solution === undefined) {
@@ -81,6 +81,7 @@ export async function updateRecordWithSecretKey(url: string, masterSecretKey: Ui
     {
       content,
       hash,
+      ...challenges,
     },
     challengeSolutions,
   );

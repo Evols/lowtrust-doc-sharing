@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { BoxKeyPair, SignKeyPair, box, sign } from 'tweetnacl';
 import { decodeBase64, encodeBase64 } from 'tweetnacl-util';
 import { createContainer } from 'unstated-next';
-import { registerWithPassword as cryptoRegisterWithPassword, loginWithPassword as cryptoLoginWithPassword } from '../crypto/authentication';
+import { registerWithPassword as cryptoRegisterWithPassword, loginWithPassword as cryptoLoginWithPassword, resetPassword as cryptoResetPassword } from '../crypto/authentication';
 import { downloadFile } from '../utils/downloader';
 
 function useKeyStore() {
@@ -99,9 +99,28 @@ function useKeyStore() {
     return true;
   }
 
+  async function resetPassword(email: string, newPassword: string, failsafeSecretKey: string) {
+
+    const loginResult = await cryptoResetPassword(url, email, newPassword, failsafeSecretKey);
+    if (loginResult === false) {
+      console.log('Wrong password or user doesn\'t exist or your credentials were tampered with');
+      return false;
+    }
+
+    storeKeys(
+      loginResult.masterSecretKey,
+      loginResult.masterBoxKeyPair,
+      loginResult.masterSignKeyPair,
+      loginResult.directoryDocId,
+    );
+
+    return true;
+  }
+
   return {
     registerWithPassword,
     loginWithPassword,
+    resetPassword,
     signOut,
     masterSecretKey,
     directoryDocId,
