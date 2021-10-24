@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, Flex, Heading, Spinner, Table, Tbody, Td, Th, Thead, Tr, IconButton, Button, useDisclosure, Modal } from '@chakra-ui/react';
+import { Box, Flex, Heading, Spinner, Table, Tbody, Td, Th, Thead, Tr, IconButton, Button, useDisclosure } from '@chakra-ui/react';
 import { Documents as DocumentsState } from '../state/Documents';
 import { FiPlus, FiTrash } from 'react-icons/fi';
 import { CreateDocumentModal } from '../components/CreateDocumentModal';
@@ -14,7 +14,7 @@ export default function Documents({}: IProps) {
   const { isOpen: isCreateDocumentOpen, onOpen: onOpenCreateDocument, onClose: onCloseCreateDocument} = useDisclosure();
 
   return <>
-  <CreateDocumentModal isOpen={isCreateDocumentOpen} onClose={onCloseCreateDocument} />
+    <CreateDocumentModal isOpen={isCreateDocumentOpen} onClose={onCloseCreateDocument} />
     <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
       <Flex w="100vw" mt={16} mb={16} flexDir="row" justifyContent="space-around">
         <Box w={1200}>

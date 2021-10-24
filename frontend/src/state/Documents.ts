@@ -14,8 +14,8 @@ function useDocuments() {
     if (documents === undefined || masterSecretKey === undefined || directoryDocId === undefined) {
       return false;
     }
-
-    await postDocument(url, masterSecretKey, directoryDocId, document);
+    const id = await postDocument(url, masterSecretKey, directoryDocId, document);
+    setDocuments([ ...documents, { ...document, id, }]);
   }
 
   useAsyncEffect(async () => {

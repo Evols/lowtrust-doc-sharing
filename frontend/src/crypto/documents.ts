@@ -28,7 +28,7 @@ export async function updateDirectory(url: string, masterSecretKey: Uint8Array, 
 export const Document = z.object({
   name: z.string(),
   mimeType: z.string(),
-  content: z.string(),
+  content: z.string(), // TODO: binary instead
 });
 export type IDocument = z.infer<typeof Document>;
 
@@ -47,4 +47,6 @@ export async function postDocument(url: string, masterSecretKey: Uint8Array, dir
   const oldDirectoryDocIds = await getDirectory(url, directoryDocId!, masterSecretKey!);
   const newDirectoryDocIds = [ ...oldDirectoryDocIds!, docId ];
   await updateDirectory(url, masterSecretKey, directoryDocId, newDirectoryDocIds);
+
+  return docId;
 }

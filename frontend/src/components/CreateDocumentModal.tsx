@@ -8,6 +8,7 @@ import { Button } from '@chakra-ui/button';
 import { Flex } from '@chakra-ui/layout';
 import { Documents } from '../state/Documents';
 import { encodeBase64 } from 'tweetnacl-util';
+import { mimeTypeFromExtension } from '../utils/mimeTypes';
 
 export interface IProps {
   isOpen: boolean,
@@ -36,9 +37,11 @@ export function CreateDocumentModal({ isOpen, onClose }: IProps) {
               const file = e.target.files!.item(0) ?? undefined;
               if (file !== undefined) {
                 const newContent = await readFile(file);
+                const extension = file.name.match(/\.[^\.]*$/)?.[0];
+                const extensionMimeType = extension !== undefined ? mimeTypeFromExtension(extension.substr(1, extension.length)) : undefined;
                 setDocContent(newContent);
                 setName(file.name.replace(/\.[^\.]*$/, ''));
-                setMimeType(file.type);
+                setMimeType(extensionMimeType !== undefined ? extensionMimeType : file.type);
               } else {
                 setDocContent(undefined);
                 setName('');
@@ -61,7 +64,10 @@ export function CreateDocumentModal({ isOpen, onClose }: IProps) {
         <Flex flexDir="row-reverse" mt={4} mb={2}>
 
           <Button
-            display={{ base: 'none', md: 'inline-flex' }}
+            display={{
+              base: 'none',
+              md: 'inline-flex',
+            }}
             fontSize="sm"
             fontWeight={600}
             color="white"
@@ -69,15 +75,18 @@ export function CreateDocumentModal({ isOpen, onClose }: IProps) {
             _hover={{
               bg: '#56b877',
             }}
-            onClick={() => createDocument({
-              name,
-              mimeType,
-              content: encodeBase64(content!),
-            })}
+            onClick={() => {
+              createDocument({
+                name,
+                mimeType,
+                content: encodeBase64(content!),
+              });
+              onClose();
+            }}
             disabled={name.length === 0 || mimeType.length === 0 || content === undefined}
           >
             Create document
-          </Button>  
+          </Button>
 
         </Flex>
 

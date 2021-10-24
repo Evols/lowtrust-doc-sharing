@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound';
 import Documents from './pages/Documents';
 import ResetPassword from './pages/ResetPassword';
 import { Documents as DocumentsState } from './state/Documents';
+import DocumentDetails from './pages/DocumentDetails';
 
 export function App() {
   return (
@@ -27,6 +28,10 @@ export function App() {
 
                 <Route path="/documents" exact>
                   <Documents />
+                </Route>
+
+                <Route path="/documents/:id" exact>
+                  <DocumentDetails />
                 </Route>
 
                 <Route path="/signup/completed" exact>
