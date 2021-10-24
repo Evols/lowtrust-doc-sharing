@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { KeyStore } from '../state/KeyStore';
+import { useToast } from '@chakra-ui/react';
 
 export interface IProps {
 }
@@ -22,6 +23,8 @@ export default function SignIn({}: IProps) {
       history.replace('/documents');
     }
   }, [isLoggedIn]);
+
+  const errorToast = useToast();
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
     <Flex w="100vw" mt="calc(32vh - 200px)" flexDir="row" justifyContent="space-around">
@@ -60,9 +63,16 @@ export default function SignIn({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              if (await loginWithPassword(email, password)) {
+              const result = await loginWithPassword(email, password);
+              if (result) {
                 setJustLoggedIn(true);
                 history.push('/documents');
+              } else {
+                errorToast({
+                  title: 'Failed to sign-in. Please check your email and password.',
+                  status: 'error',
+                  isClosable: true,
+                });
               }
             }}
           >

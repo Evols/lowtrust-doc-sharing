@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Flex, FormControl, FormHelperText, FormLabel, Heading, Input } from '@chakra-ui/react';
 import { KeyStore } from '../state/KeyStore';
 import { useHistory } from 'react-router';
+import { useToast } from '@chakra-ui/react';
 
 export interface IProps {
 }
@@ -21,6 +22,8 @@ export default function SignUp({}: IProps) {
       history.replace('/documents');
     }
   }, [isLoggedIn]);
+
+  const errorToast = useToast();
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
     <Flex w="100vw" mt="calc(32vh - 200px)" mb={16} flexDir="row" justifyContent="space-around">
@@ -61,9 +64,16 @@ export default function SignUp({}: IProps) {
               bg: '#56b877',
             }}
             onClick={async () => {
-              if (await registerWithPassword(email, password)) {
+              const result = await registerWithPassword(email, password);
+              if (result) {
                 setJustLoggedIn(true);
                 history.push('/signup/completed');
+              } else {
+                errorToast({
+                  title: 'Failed to sign-up. Maybe this email already has an account.',
+                  status: 'error',
+                  isClosable: true,
+                });
               }
             }}
           >
