@@ -1,7 +1,7 @@
 
-import { randomBytes, secretbox } from 'tweetnacl';
+import { randomBytes, secretbox, hash } from 'tweetnacl';
 import { IChallenge } from 'ltds_common/dist/schemas';
-import { decodeBase64, encodeBase64, decodeUTF8 } from 'tweetnacl-util';
+import { decodeBase64, encodeBase64, decodeUTF8, encodeUTF8 } from 'tweetnacl-util';
 import { z } from 'zod';
 import { getRecordChallenges, getRecord, postRecord, putRecord } from '../utils/backend';
 import { buildSecretBasedSolution, buildSecretBasedChallenge } from './challenges';
@@ -25,7 +25,7 @@ export async function getRecordWithSecretKey(url: string, docId: string, masterS
   const docRawParsed = z.object({
     nonce: z.string(),
     box: z.string(),
-  }).parse(JSON.stringify(docRaw.content));
+  }).parse(JSON.parse(docRaw.content));
 
   const docBuffer = secretbox.open(decodeBase64(docRawParsed.box), decodeBase64(docRawParsed.nonce), masterSecretKey);
   if (docBuffer === null) {
@@ -35,31 +35,31 @@ export async function getRecordWithSecretKey(url: string, docId: string, masterS
   return docBuffer;
 }
 
-export async function createRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, content: string) {
-
+async function buildRecordWithSecretKey(masterSecretKey: Uint8Array, contentPlaintext: string) {
+  
   const challenges: IChallenge[] = [
     await buildSecretBasedChallenge(masterSecretKey),
   ];
 
   const nonce = randomBytes(secretbox.nonceLength);
-
-  const directoryDocId = await postRecord(
-    url,
-    {
-      content: JSON.stringify({
-        nonce: encodeBase64(nonce),
-        box: encodeBase64(secretbox(decodeUTF8(content), nonce, masterSecretKey)),
-      }),
-      hash: '',
-      readChallenges: challenges,
-      writeChallenges: challenges,
-    },
-  );
-
-  return directoryDocId;
+  const contentPlaintextBytes = decodeUTF8(contentPlaintext);
+  return {
+    content: JSON.stringify({
+      nonce: encodeBase64(nonce),
+      box: encodeBase64(secretbox(contentPlaintextBytes, nonce, masterSecretKey)),
+    }),
+    hash: encodeBase64(hash(contentPlaintextBytes)),
+    readChallenges: challenges,
+    writeChallenges: challenges,
+  };
 }
 
-export async function updateRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, id: string, content: string, hash: string) {
+export async function createRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, contentPlaintext: string) {
+  const record = await buildRecordWithSecretKey(masterSecretKey, contentPlaintext);
+  return await postRecord(url, record);
+}
+
+export async function updateRecordWithSecretKey(url: string, masterSecretKey: Uint8Array, id: string, contentPlaintext: string) {
   const challenges = await getRecordChallenges(url, id)
   const writeSecretChallenges = challenges.writeChallenges.filter(
     challenge => JSON.parse(challenge.helper).type === 'secret'
@@ -75,14 +75,6 @@ export async function updateRecordWithSecretKey(url: string, masterSecretKey: Ui
     }
   ))).flat();
 
-  await putRecord(
-    url,
-    id,
-    {
-      content,
-      hash,
-      ...challenges,
-    },
-    challengeSolutions,
-  );
+  const newRecord = await buildRecordWithSecretKey(masterSecretKey, contentPlaintext);
+  await putRecord(url, id, newRecord, challengeSolutions);
 }

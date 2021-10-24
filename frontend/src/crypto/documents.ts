@@ -1,7 +1,7 @@
 
 import { decodeUTF8, encodeUTF8 } from 'tweetnacl-util';
 import { z } from 'zod';
-import { createRecordWithSecretKey, getRecordWithSecretKey } from './records';
+import { createRecordWithSecretKey, getRecordWithSecretKey, updateRecordWithSecretKey } from './records';
 
 // Directory
 
@@ -10,12 +10,16 @@ export async function createDirectory(url: string, masterSecretKey: Uint8Array, 
 }
 
 // Returns the ids of the documents
-export async function getDirectory(url: string, id: string, masterSecretKey: Uint8Array) {
-  const docContent = await getRecordWithSecretKey(url, id, masterSecretKey);
+export async function getDirectory(url: string, directoryDocId: string, masterSecretKey: Uint8Array) {
+  const docContent = await getRecordWithSecretKey(url, directoryDocId, masterSecretKey);
   if (docContent === undefined) {
     return undefined;
   }
   return z.array(z.string()).parse(JSON.parse(encodeUTF8(docContent)));
+}
+
+export async function updateDirectory(url: string, masterSecretKey: Uint8Array, directoryDocId: string, docIds: string[]) {
+  return await updateRecordWithSecretKey(url, masterSecretKey, directoryDocId, JSON.stringify(docIds));
 }
 
 
@@ -37,13 +41,10 @@ export async function getDocument(url: string, id: string, masterSecretKey: Uint
   return Document.parse(JSON.parse(encodeUTF8(docContent)));
 }
 
-// export async function postDocument(doc: IDocument) {
-//   const docCiphered = decodeUTF8(JSON.stringify(doc));
-//   const docId = await createRecordWithSecretKey(url, masterSecretKey!, );
+export async function postDocument(url: string, masterSecretKey: Uint8Array, directoryDocId: string, doc: IDocument) {
+  const docId = await createRecordWithSecretKey(url, masterSecretKey, JSON.stringify(doc));
 
-//   const oldDirectoryDocString = await getRecordWithSecretKey(url, directoryDocId!, masterSecretKey!);
-//   const oldDirectoryDocIds = z.array(z.string()).parse(JSON.parse(oldDirectoryDocString ?? 'null'));
-//   const newDirectoryDocIds = [ ...oldDirectoryDocIds, docId ];
-
-//   // TODO: update directory
-// }
+  const oldDirectoryDocIds = await getDirectory(url, directoryDocId!, masterSecretKey!);
+  const newDirectoryDocIds = [ ...oldDirectoryDocIds!, docId ];
+  await updateDirectory(url, masterSecretKey, directoryDocId, newDirectoryDocIds);
+}

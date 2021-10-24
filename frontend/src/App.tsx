@@ -11,50 +11,53 @@ import SignUpCompleted from './pages/SignUpCompleted';
 import NotFound from './pages/NotFound';
 import Documents from './pages/Documents';
 import ResetPassword from './pages/ResetPassword';
+import { Documents as DocumentsState } from './state/Documents';
 
 export function App() {
   return (
     <ChakraProvider>
       <KeyStore.Provider>
-        <Router>
-          <Box>
+        <DocumentsState.Provider>
+          <Router>
+            <Box>
 
-            <Navbar />
+              <Navbar />
 
-            <Switch>
+              <Switch>
 
-              <Route path="/documents" exact>
-                <Documents />
-              </Route>
+                <Route path="/documents" exact>
+                  <Documents />
+                </Route>
 
-              <Route path="/signup/completed" exact>
-                <SignUpCompleted />
-              </Route>
+                <Route path="/signup/completed" exact>
+                  <SignUpCompleted />
+                </Route>
 
-              <Route path="/signup" exact>
-                <SignUp />
-              </Route>
+                <Route path="/signup" exact>
+                  <SignUp />
+                </Route>
 
-              <Route path="/signin" exact>
-                <SignIn />
-              </Route>
+                <Route path="/signin" exact>
+                  <SignIn />
+                </Route>
 
-              <Route path="/resetpassword" exact>
-                <ResetPassword />
-              </Route>
+                <Route path="/resetpassword" exact>
+                  <ResetPassword />
+                </Route>
 
-              <Route path="/" exact>
-                <Redirect to="/signin" />
-              </Route>
+                <Route path="/" exact>
+                  <Redirect to="/signin" />
+                </Route>
 
-              <Route path="/">
-                <NotFound />
-              </Route>
+                <Route path="/">
+                  <NotFound />
+                </Route>
 
-            </Switch>
+              </Switch>
 
-          </Box>
-        </Router>
+            </Box>
+          </Router>
+        </DocumentsState.Provider>
       </KeyStore.Provider>
     </ChakraProvider>
   );

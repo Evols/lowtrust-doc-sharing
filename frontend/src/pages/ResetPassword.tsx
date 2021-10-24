@@ -5,6 +5,7 @@ import { useHistory } from 'react-router';
 import { KeyStore } from '../state/KeyStore';
 import { readFile } from '../utils/files';
 import { useToast } from '@chakra-ui/react';
+import { encodeUTF8 } from 'tweetnacl-util';
 
 export interface IProps {
 }
@@ -51,7 +52,7 @@ export default function ResetPassword({}: IProps) {
             onChange={async e => {
               const file = e.target.files!.item(0) ?? undefined;
               if (file !== undefined) {
-                setfailsafeSecretKey(await readFile(file!));
+                setfailsafeSecretKey(encodeUTF8(await readFile(file!)));
               } else {
                 setfailsafeSecretKey(undefined);
               }

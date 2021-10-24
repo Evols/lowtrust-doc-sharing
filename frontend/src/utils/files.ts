@@ -1,10 +1,4 @@
 
-export const readFile = (file: File): Promise<string> => new Promise(
-  (resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      resolve(reader.result as string);
-    };
-    reader.readAsText(file as any);
-  }
-);
+export async function readFile(file: File): Promise<Uint8Array> {
+  return new Uint8Array(await file.arrayBuffer());
+}

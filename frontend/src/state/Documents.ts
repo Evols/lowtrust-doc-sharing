@@ -1,14 +1,22 @@
 
 import { useState } from 'react';
 import { createContainer } from 'unstated-next';
-import { getDirectory, getDocument, IDocument } from '../crypto/documents';
+import { getDirectory, getDocument, IDocument, postDocument } from '../crypto/documents';
 import { useAsyncEffect } from '../utils/hooks';
 import { KeyStore } from './KeyStore';
 
 function useDocuments() {
 
   const { masterSecretKey, directoryDocId, url, isLoggedIn } = KeyStore.useContainer();
-  const [documents, setDocuments] = useState<IDocument[] | undefined>(undefined);
+  const [documents, setDocuments] = useState<(IDocument & { id: string })[] | undefined>(undefined);
+
+  async function createDocument(document: IDocument) {
+    if (documents === undefined || masterSecretKey === undefined || directoryDocId === undefined) {
+      return false;
+    }
+
+    await postDocument(url, masterSecretKey, directoryDocId, document);
+  }
 
   useAsyncEffect(async () => {
     if (isLoggedIn) {
@@ -17,7 +25,7 @@ function useDocuments() {
         const docs = (await Promise.all(docIds.map(
           async docId => {
             const doc = await getDocument(url, docId, masterSecretKey!);
-            return doc === undefined ? [] : [doc];
+            return doc === undefined ? [] : [{ ...doc, id: docId }];
           }
         ))).flat();
         setDocuments(docs);
@@ -27,6 +35,7 @@ function useDocuments() {
 
   return {
     documents,
+    createDocument,
   };
 }
 
