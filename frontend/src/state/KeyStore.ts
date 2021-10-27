@@ -17,16 +17,22 @@ function useKeyStore() {
 
   const isLoggedIn = masterSecretKey !== undefined;
 
-  function storeKeys(masterSecretKey: Uint8Array, masterBoxKeyPair: BoxKeyPair, masterSignKeyPair: SignKeyPair, directoryDocId: string) {
-    _setMasterSecretKey(masterSecretKey);
-    _setMasterBoxKeyPair(masterBoxKeyPair);
-    _setMasterSignKeyPair(masterSignKeyPair);
-    _setDirectoryDocId(directoryDocId);
+  console.log('useKeyStore masterSecretKey', encodeBase64(masterSecretKey ?? new Uint8Array()), 'directoryDocId', directoryDocId);
+
+  function storeKeys(newMasterSecretKey: Uint8Array, newMasterBoxKeyPair: BoxKeyPair, newMasterSignKeyPair: SignKeyPair, newDirectoryDocId: string) {
+    _setMasterSecretKey(newMasterSecretKey);
+    _setMasterBoxKeyPair(newMasterBoxKeyPair);
+    _setMasterSignKeyPair(newMasterSignKeyPair);
+    _setDirectoryDocId(newDirectoryDocId);
+
+    console.log('storeKeys masterSecretKey', encodeBase64(masterSecretKey ?? new Uint8Array()), '->', encodeBase64(newMasterSecretKey));
+    console.log('storeKeys directoryDocId', directoryDocId, '->', newDirectoryDocId);
+
     sessionStorage.setItem('authenticated', 'true');
-    sessionStorage.setItem('masterSecretKey', encodeBase64(masterSecretKey!));
-    sessionStorage.setItem('masterBoxKey', encodeBase64(masterBoxKeyPair!.secretKey));
-    sessionStorage.setItem('masterSignKey', encodeBase64(masterSignKeyPair!.secretKey));
-    sessionStorage.setItem('directoryDocId', directoryDocId!);
+    sessionStorage.setItem('masterSecretKey', encodeBase64(newMasterSecretKey!));
+    sessionStorage.setItem('masterBoxKey', encodeBase64(newMasterBoxKeyPair!.secretKey));
+    sessionStorage.setItem('masterSignKey', encodeBase64(newMasterSignKeyPair!.secretKey));
+    sessionStorage.setItem('directoryDocId', newDirectoryDocId!);
   }
 
   function removeStoredKeys() {
@@ -52,6 +58,7 @@ function useKeyStore() {
       const storageMasterBoxKey = decodeBase64(sessionStorage.getItem('masterBoxKey')!);
       const storageMasterSignKey = decodeBase64(sessionStorage.getItem('masterSignKey')!);
       const storageDirectoryDocId = sessionStorage.getItem('directoryDocId')!;
+      console.log('gatherKeysFromStorage storageMasterSecretKey', encodeBase64(storageMasterSecretKey ?? new Uint8Array()), 'storageDirectoryDocId', storageDirectoryDocId);
       storeKeys(
         storageMasterSecretKey,
         box.keyPair.fromSecretKey(storageMasterBoxKey),

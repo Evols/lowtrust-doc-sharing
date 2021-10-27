@@ -20,6 +20,7 @@ function useDocuments() {
 
   useAsyncEffect(async () => {
     if (isLoggedIn) {
+      console.log('useDocuments init directoryDocId:', directoryDocId);
       const docIds = await getDirectory(url, directoryDocId!, masterSecretKey!);
       if (docIds !== undefined) {
         const docs = (await Promise.all(docIds.map(
