@@ -16,7 +16,7 @@ export default function DocumentDetails({}: IProps) {
 
   return <Flex w="100vw" minH="100%" flexDir="column" justifyContent="space-around">
     <Flex w="100vw" mt={16} mb={16} flexDir="row" justifyContent="space-around">
-      <Box w={1200}>
+      <Box w={1200} maxW={1200}>
         <Heading mb={4}>
           Viewing {
             doc === undefined
