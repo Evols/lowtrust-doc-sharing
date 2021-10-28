@@ -18,8 +18,9 @@ function useDocuments() {
     setDocuments([ ...documents, { ...document, id, }]);
   }
 
+  const canFetchDirectory = isLoggedIn && directoryDocId !== undefined;
   useAsyncEffect(async () => {
-    if (isLoggedIn) {
+    if (canFetchDirectory) {
       console.log('useDocuments init directoryDocId:', directoryDocId);
       const docIds = await getDirectory(url, directoryDocId!, masterSecretKey!);
       if (docIds !== undefined) {
@@ -32,7 +33,7 @@ function useDocuments() {
         setDocuments(docs);
       }
     }
-  }, [isLoggedIn]);
+  }, [canFetchDirectory]);
 
   return {
     documents,
