@@ -17,16 +17,11 @@ function useKeyStore() {
 
   const isLoggedIn = masterSecretKey !== undefined;
 
-  console.log('useKeyStore masterSecretKey', encodeBase64(masterSecretKey ?? new Uint8Array()), 'directoryDocId', directoryDocId);
-
   function storeKeys(newMasterSecretKey: Uint8Array, newMasterBoxKeyPair: BoxKeyPair, newMasterSignKeyPair: SignKeyPair, newDirectoryDocId: string) {
     _setMasterSecretKey(newMasterSecretKey);
     _setMasterBoxKeyPair(newMasterBoxKeyPair);
     _setMasterSignKeyPair(newMasterSignKeyPair);
     _setDirectoryDocId(newDirectoryDocId);
-
-    console.log('storeKeys masterSecretKey', encodeBase64(masterSecretKey ?? new Uint8Array()), '->', encodeBase64(newMasterSecretKey));
-    console.log('storeKeys directoryDocId', directoryDocId, '->', newDirectoryDocId);
 
     sessionStorage.setItem('authenticated', 'true');
     sessionStorage.setItem('masterSecretKey', encodeBase64(newMasterSecretKey!));
@@ -58,7 +53,6 @@ function useKeyStore() {
       const storageMasterBoxKey = decodeBase64(sessionStorage.getItem('masterBoxKey')!);
       const storageMasterSignKey = decodeBase64(sessionStorage.getItem('masterSignKey')!);
       const storageDirectoryDocId = sessionStorage.getItem('directoryDocId')!;
-      console.log('gatherKeysFromStorage storageMasterSecretKey', encodeBase64(storageMasterSecretKey ?? new Uint8Array()), 'storageDirectoryDocId', storageDirectoryDocId);
       storeKeys(
         storageMasterSecretKey,
         box.keyPair.fromSecretKey(storageMasterBoxKey),
